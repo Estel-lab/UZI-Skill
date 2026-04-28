@@ -32,7 +32,7 @@ def test_distressed_negative_roe():
 def test_fund_managers_no_cap_in_wave3():
     """wave3 调用 fetch_fund_holders 时不能写死 limit=6（只检查代码行，不查注释）"""
     import re
-    src = (SCRIPTS_DIR / "run_real_test.py").read_text(encoding="utf-8")
+    src = (((SCRIPTS_DIR / "run_real_test.py").read_text(encoding="utf-8")) + "\n" + (SCRIPTS_DIR / "lib" / "pipeline" / "score_fns.py").read_text(encoding="utf-8"))
     fund_idx = src.find("def _fund_holders")
     assert fund_idx > 0, "_fund_holders helper missing"
     snippet = src[fund_idx:fund_idx + 800]
@@ -52,7 +52,7 @@ def test_sig_dist_has_skip_key_in_preview():
 
 
 def test_sig_dist_has_skip_key_in_run_real_test():
-    src = (SCRIPTS_DIR / "run_real_test.py").read_text(encoding="utf-8")
+    src = (((SCRIPTS_DIR / "run_real_test.py").read_text(encoding="utf-8")) + "\n" + (SCRIPTS_DIR / "lib" / "pipeline" / "score_fns.py").read_text(encoding="utf-8"))
     idx = src.find('sig_dist = {')
     assert idx > 0, "sig_dist init not found"
     line = src[idx:idx + 200]
@@ -61,7 +61,7 @@ def test_sig_dist_has_skip_key_in_run_real_test():
 
 # ─── BUG (v2.6) · ThreadPoolExecutor 必须有 timeout ──
 def test_collect_raw_data_has_timeout():
-    src = (SCRIPTS_DIR / "run_real_test.py").read_text(encoding="utf-8")
+    src = (((SCRIPTS_DIR / "run_real_test.py").read_text(encoding="utf-8")) + "\n" + (SCRIPTS_DIR / "lib" / "pipeline" / "score_fns.py").read_text(encoding="utf-8"))
     fn_idx = src.find("def collect_raw_data")
     assert fn_idx > 0, "collect_raw_data not found"
     # Function spans well over 5000 chars after v2.7; use larger window
@@ -75,7 +75,7 @@ def test_collect_raw_data_has_timeout():
 
 # ─── BUG (v2.6) · mini_racer 锁必须存在 ──
 def test_mini_racer_lock_exists():
-    src = (SCRIPTS_DIR / "run_real_test.py").read_text(encoding="utf-8")
+    src = (((SCRIPTS_DIR / "run_real_test.py").read_text(encoding="utf-8")) + "\n" + (SCRIPTS_DIR / "lib" / "pipeline" / "score_fns.py").read_text(encoding="utf-8"))
     assert "_MINI_RACER_FETCHERS" in src, "BUG regression: mini_racer 锁清单缺失"
     assert "_MINI_RACER_LOCK" in src, "BUG regression: mini_racer 锁实例缺失"
     # Check the 3 dangerous fetchers are still in the set
@@ -101,7 +101,7 @@ def test_all_modules_have_future_annotations():
 
 # ─── BUG (v2.6.1) · dim_commentary 必须覆盖 22 维 ──
 def test_dim_labels_covers_all_22_dims():
-    src = (SCRIPTS_DIR / "run_real_test.py").read_text(encoding="utf-8")
+    src = (((SCRIPTS_DIR / "run_real_test.py").read_text(encoding="utf-8")) + "\n" + (SCRIPTS_DIR / "lib" / "pipeline" / "score_fns.py").read_text(encoding="utf-8"))
     idx = src.find("dim_labels = {")
     assert idx > 0, "dim_labels not found"
     # Find closing brace
@@ -115,7 +115,7 @@ def test_dim_labels_covers_all_22_dims():
 
 # ─── BUG (v2.6.1) · auto_summarize 不能用占位符 ──
 def test_auto_summarize_no_stub_placeholder():
-    src = (SCRIPTS_DIR / "run_real_test.py").read_text(encoding="utf-8")
+    src = (((SCRIPTS_DIR / "run_real_test.py").read_text(encoding="utf-8")) + "\n" + (SCRIPTS_DIR / "lib" / "pipeline" / "score_fns.py").read_text(encoding="utf-8"))
     fn_idx = src.find("def _auto_summarize_dim")
     assert fn_idx > 0, "_auto_summarize_dim missing"
     fn_end = src.find("def generate_synthesis", fn_idx)
@@ -182,7 +182,7 @@ def test_xueqiu_browser_opt_in_only():
 
 # ─── BUG#R6 (v2.7.1) · auto_summarize 18_trap/19_contests 必须透明 ──
 def test_auto_summarize_trap_contests_transparent():
-    src = (SCRIPTS_DIR / "run_real_test.py").read_text(encoding="utf-8")
+    src = (((SCRIPTS_DIR / "run_real_test.py").read_text(encoding="utf-8")) + "\n" + (SCRIPTS_DIR / "lib" / "pipeline" / "score_fns.py").read_text(encoding="utf-8"))
     fn_idx = src.find("def _auto_summarize_dim")
     assert fn_idx > 0
     end = src.find("def generate_synthesis", fn_idx)
@@ -243,7 +243,7 @@ def test_kline_hk_has_fallback_chain():
 # ─── BUG#R9 (v2.7.2) · wave2 结束必须 flush ──
 def test_wave2_persists_before_wave3():
     """wave2 整体超时 / 正常结束 后必须强制 flush raw_data；否则 timeout 标记会丢"""
-    src = (SCRIPTS_DIR / "run_real_test.py").read_text(encoding="utf-8")
+    src = (((SCRIPTS_DIR / "run_real_test.py").read_text(encoding="utf-8")) + "\n" + (SCRIPTS_DIR / "lib" / "pipeline" / "score_fns.py").read_text(encoding="utf-8"))
     w2_done = src.find('[wave 2] done in')
     w3_start = src.find('[wave 3] bonus fetchers')
     assert w2_done > 0 and w3_start > w2_done, "wave2/wave3 log markers not found"
@@ -330,7 +330,7 @@ def test_evaluator_carries_profile_fields():
 
 def test_panel_carries_profile_fields():
     """panel.investors[*] 必须带上 3 个 profile 字段"""
-    src = (SCRIPTS_DIR / "run_real_test.py").read_text(encoding="utf-8")
+    src = (((SCRIPTS_DIR / "run_real_test.py").read_text(encoding="utf-8")) + "\n" + (SCRIPTS_DIR / "lib" / "pipeline" / "score_fns.py").read_text(encoding="utf-8"))
     gen_panel_idx = src.find("def generate_panel")
     assert gen_panel_idx > 0
     body = src[gen_panel_idx:gen_panel_idx + 6000]
@@ -522,12 +522,15 @@ def test_fetch_industry_has_dynamic_fallback():
 
 # ─── v2.9.1 · 评委汇总渲染完整性 ──
 def test_panel_insights_rendered():
-    """panel_insights 必须被渲染到 HTML，不能写入 synthesis.json 后静默丢弃"""
-    # assemble_report 必须有 render_panel_insights
-    src = (SCRIPTS_DIR / "assemble_report.py").read_text(encoding="utf-8")
-    assert "def render_panel_insights" in src, \
+    """panel_insights 必须被渲染到 HTML，不能写入 synthesis.json 后静默丢弃.
+
+    v3.2 · render_panel_insights 搬到 lib/report/special_cards.py · 调用仍在 assemble_report."""
+    ar_src = (SCRIPTS_DIR / "assemble_report.py").read_text(encoding="utf-8")
+    sc_src = (SCRIPTS_DIR / "lib" / "report" / "special_cards.py").read_text(encoding="utf-8")
+    merged = ar_src + "\n" + sc_src
+    assert "def render_panel_insights" in merged, \
         "v2.9.1 regression: panel_insights 渲染函数缺失（之前的静默丢弃 bug）"
-    assert "render_panel_insights(syn, panel)" in src, \
+    assert "render_panel_insights(syn, panel)" in ar_src, \
         "v2.9.1 regression: panel_insights 未被调用"
     # template 必须有对应 inject 点
     tpl = (SCRIPTS_DIR.parent / "assets" / "report-template.html").read_text(encoding="utf-8")
@@ -536,25 +539,32 @@ def test_panel_insights_rendered():
 
 
 def test_top3_bears_rendered():
-    """share-card 必须对称渲染 Top 3 看多 + Top 3 看空"""
-    src = (SCRIPTS_DIR / "assemble_report.py").read_text(encoding="utf-8")
-    assert "def render_top3_bears" in src, \
+    """share-card 必须对称渲染 Top 3 看多 + Top 3 看空.
+
+    v3.2 · render_top3_bears 搬到 lib/report/panel_cards.py · 调用仍在 assemble_report."""
+    ar_src = (SCRIPTS_DIR / "assemble_report.py").read_text(encoding="utf-8")
+    pc_src = (SCRIPTS_DIR / "lib" / "report" / "panel_cards.py").read_text(encoding="utf-8")
+    merged = ar_src + "\n" + pc_src
+    assert "def render_top3_bears" in merged, \
         "v2.9.1 regression: render_top3_bears 函数缺失（分享卡不对称）"
     tpl = (SCRIPTS_DIR.parent / "assets" / "report-template.html").read_text(encoding="utf-8")
     assert "INJECT_TOP3_BEARS" in tpl, \
         "v2.9.1 regression: template 缺 INJECT_TOP3_BEARS"
 
 
-def test_consensus_half_weight_formula():
-    """panel_consensus 必须用半权 neutral 公式（v2.9.1 修的 bug）"""
-    src = (SCRIPTS_DIR / "run_real_test.py").read_text(encoding="utf-8")
+def test_consensus_neutral_weighted_formula():
+    """panel_consensus 必须对 neutral 加权计入（v2.9.1 引入半权 0.5，v2.11 校准到 0.6）"""
+    src = (((SCRIPTS_DIR / "run_real_test.py").read_text(encoding="utf-8")) + "\n" + (SCRIPTS_DIR / "lib" / "pipeline" / "score_fns.py").read_text(encoding="utf-8"))
     # 找 generate_panel 函数体
     fn_idx = src.find("def generate_panel")
     fn_end = src.find("\ndef ", fn_idx + 100)
     body = src[fn_idx:fn_end]
-    # 公式必须体现 neutral 半权
-    assert "0.5 * neutral" in body or "0.5*neutral" in body or "neutral / 2" in body, \
-        "v2.9.1 regression: consensus 公式未实现 neutral 半权"
+    # 公式必须对 neutral 加权（v2.11 起用常量 NEUTRAL_WEIGHT）
+    assert ("NEUTRAL_WEIGHT * neutral" in body or
+            "0.6 * neutral" in body or
+            "0.5 * neutral" in body or
+            "0.5*neutral" in body), \
+        "regression: consensus 公式未对 neutral 加权计入"
     # 老的裸 bullish-only 不该再单独出现
     assert 'sig_dist["bullish"] / max(' not in body, \
         "v2.9.1 regression: 仍有老的 bullish-only 公式"
@@ -635,8 +645,12 @@ def test_fetch_basic_rejects_etf():
 
 def test_stage1_early_exits_on_etf():
     """v2.9.2 · run_real_test.stage1 必须在 ETF ticker 时早期 return，
-    不跑 22 维 fetcher 浪费时间"""
-    src = (SCRIPTS_DIR / "run_real_test.py").read_text(encoding="utf-8")
+    不跑 22 维 fetcher 浪费时间（v3.1 · ETF 检测代码在 preflight_helpers.py）"""
+    src = (
+        (SCRIPTS_DIR / "run_real_test.py").read_text(encoding="utf-8")
+        + "\n" + (SCRIPTS_DIR / "lib" / "pipeline" / "score_fns.py").read_text(encoding="utf-8")
+        + "\n" + (SCRIPTS_DIR / "lib" / "pipeline" / "preflight_helpers.py").read_text(encoding="utf-8")
+    )
     assert "non_stock_security" in src, \
         "v2.9.2 regression: stage1 缺 non_stock_security 早退逻辑"
     assert "top_holdings" in src, \
@@ -664,8 +678,12 @@ def test_fund_holders_two_tier_strategy():
 
 
 def test_lite_mode_detection_exists():
-    """v2.10.1 · _detect_lite_mode 必须存在"""
-    src = (SCRIPTS_DIR / "run_real_test.py").read_text(encoding="utf-8")
+    """v2.10.1 · _detect_lite_mode 必须存在（v3.1 · UZI_LITE / UZI_DDG_BUDGET 在 preflight_helpers）"""
+    src = (
+        (SCRIPTS_DIR / "run_real_test.py").read_text(encoding="utf-8")
+        + "\n" + (SCRIPTS_DIR / "lib" / "pipeline" / "score_fns.py").read_text(encoding="utf-8")
+        + "\n" + (SCRIPTS_DIR / "lib" / "pipeline" / "preflight_helpers.py").read_text(encoding="utf-8")
+    )
     assert "_detect_lite_mode" in src, "v2.10.1 regression: 缺 _detect_lite_mode"
     assert "UZI_LITE" in src
     assert "UZI_DDG_BUDGET" in src

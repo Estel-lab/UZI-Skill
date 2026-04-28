@@ -12,7 +12,7 @@
 [![Methods](https://img.shields.io/badge/Institutional%20Methods-17-red)]()
 [![Self-Review](https://img.shields.io/badge/Self--Review-13%20checks-blueviolet)](skills/deep-analysis/scripts/lib/self_review.py)
 
-**A-share / HK / US deep-analysis engine — with first-class Chinese-market coverage Western terminals don't touch. v2.9: mechanical self-review gate (13 checks) — can't ship a broken report.**
+**A-share / HK / US deep-analysis engine — with first-class Chinese-market coverage Western terminals don't touch. v3.2.0: architectural split of `assemble_report.py` (2964→587 lines, -80%) · v3.1.0: `run_real_test.py` refactor (-65%) · v3.0.0: pipeline architecture default (UZI_LEGACY=1 falls back). v2.x APIs 100% compatible via re-export · 332 pytest pass.**
 
 [Install](#install) · [Usage](#usage) · [Why Western Investors Should Care](#-why-western-investors-should-care) · [Jury Panel](#-51-investor-jury) · [Methods](#-17-institutional-methods) · [Self-Review Gate 🆕](#-mechanical-self-review-gate-new-in-v29) · [Screenshots](#-what-the-report-looks-like) · [FAQ](#-faq)
 
@@ -43,10 +43,10 @@ So yes — this plugin helps you understand Chinese names like **Alibaba** (`BAB
 One sentence: give it a ticker, Claude becomes your analyst — pulls **22 dimensions of data**, runs **17 Wall-Street analysis models**, has **51 investors with distinct methodologies** score the stock, and produces a 600 KB Bloomberg-style HTML report.
 
 ```
-/analyze-stock 600519         # Kweichow Moutai (A-share)
-/analyze-stock 00700.HK       # Tencent (HK)
-/analyze-stock BABA           # Alibaba ADR
-/analyze-stock AAPL           # Apple
+/stock-deep-analyzer:analyze-stock 600519         # Kweichow Moutai (A-share)
+/stock-deep-analyzer:analyze-stock 00700.HK       # Tencent (HK)
+/stock-deep-analyzer:analyze-stock BABA           # Alibaba ADR
+/stock-deep-analyzer:analyze-stock AAPL           # Apple
 ```
 
 After 5-8 minutes you get:
@@ -78,17 +78,17 @@ No matter which agent you use, **one line does it**:
 /plugin install stock-deep-analyzer@uzi-skill
 ```
 
-Then say `/analyze-stock Tencent` or `/analyze-stock 00700.HK`.
+Then say `/stock-deep-analyzer:analyze-stock Tencent` or `/stock-deep-analyzer:analyze-stock 00700.HK`.
 
-> ⚠️ **Claude Code auto-prefixes plugin commands with a namespace**
+> ⚠️ **Always use the `stock-deep-analyzer:` namespace prefix**
 >
-> After install, all skills/commands appear in the skill picker as `stock-deep-analyzer:<name>`:
-> - `stock-deep-analyzer:analyze-stock`
-> - `stock-deep-analyzer:quick-scan`
-> - `stock-deep-analyzer:scan-trap`
-> - `stock-deep-analyzer:dcf` / `:ic-memo` / `:investor-panel` / `:trap-detector` / ...
+> After install, all skills/commands live under `stock-deep-analyzer:<name>`. Short names (`/analyze-stock`) don't always resolve in every environment — to be safe, always use the full name:
+> - `/stock-deep-analyzer:analyze-stock <ticker>`
+> - `/stock-deep-analyzer:quick-scan <ticker>`
+> - `/stock-deep-analyzer:scan-trap <ticker>`
+> - `/stock-deep-analyzer:dcf <ticker>` / `:ic-memo` / `:investor-panel` / `:trap-detector` / ...
 >
-> **Short names usually work too** (`/analyze-stock 00700.HK`). If there's a name collision with another plugin, or autocomplete can't resolve it, use the full `stock-deep-analyzer:analyze-stock`. Cursor / Gemini CLI / Codex behave the same way.
+> Cursor / Gemini CLI / Codex behave the same way — use the full prefixed name.
 
 ### Codex
 
@@ -147,10 +147,10 @@ The agent spins up a Cloudflare Tunnel and gives you a `https://xxx.trycloudflar
 ### Full deep analysis (5-8 minutes)
 
 ```
-/analyze-stock 600519          # A-share by ticker
-/analyze-stock 00700.HK        # HK
-/analyze-stock BABA            # US ADR
-/analyze-stock AAPL            # US
+/stock-deep-analyzer:analyze-stock 600519          # A-share by ticker
+/stock-deep-analyzer:analyze-stock 00700.HK        # HK
+/stock-deep-analyzer:analyze-stock BABA            # US ADR
+/stock-deep-analyzer:analyze-stock AAPL            # US
 ```
 
 > **Ticker format tips for English users:**
@@ -161,21 +161,24 @@ The agent spins up a Cloudflare Tunnel and gives you a `https://xxx.trycloudflar
 
 ### Single-purpose commands
 
+> All commands require the `/stock-deep-analyzer:` prefix for reliable dispatch across environments.
+
 | Command | What It Does |
 |---|---|
-| `/dcf 600519` | DCF valuation · WACC + 5×5 sensitivity table |
-| `/comps 002273` | Peer comparison · PE / PB percentile ranking |
-| `/lbo 600519` | LBO stress test · PE-buyer IRR perspective |
-| `/initiate BABA` | Initiating-coverage report · JPM / GS format |
-| `/ic-memo BABA` | Investment-committee memo · 3-scenario returns |
-| `/earnings AAPL` | Earnings beat/miss analysis |
-| `/catalysts 300750` | Catalyst calendar · next 60 days |
-| `/thesis 600519` | Investment-thesis tracker · 5 pillars |
-| `/screen AAPL` | 5 quant screens · value / growth / quality / GARP / short |
-| `/dd BABA` | Due-diligence checklist · 21 items across 5 workstreams |
-| `/quick-scan 00700.HK` | 30-second sanity check |
-| `/panel-only 600519` | Just run the 51-investor jury — no HTML report |
-| `/scan-trap 600519` | Pump-and-dump / trap detection (8 signals) |
+| `/stock-deep-analyzer:dcf 600519` | DCF valuation · WACC + 5×5 sensitivity table |
+| `/stock-deep-analyzer:comps 002273` | Peer comparison · PE / PB percentile ranking |
+| `/stock-deep-analyzer:lbo 600519` | LBO stress test · PE-buyer IRR perspective |
+| `/stock-deep-analyzer:initiate BABA` | Initiating-coverage report · JPM / GS format |
+| `/stock-deep-analyzer:ic-memo BABA` | Investment-committee memo · 3-scenario returns |
+| `/stock-deep-analyzer:earnings AAPL` | Earnings beat/miss analysis |
+| `/stock-deep-analyzer:catalysts 300750` | Catalyst calendar · next 60 days |
+| `/stock-deep-analyzer:thesis 600519` | Investment-thesis tracker · 5 pillars |
+| `/stock-deep-analyzer:screen AAPL` | 5 quant screens · value / growth / quality / GARP / short |
+| `/stock-deep-analyzer:dd BABA` | Due-diligence checklist · 21 items across 5 workstreams |
+| `/stock-deep-analyzer:quick-scan 00700.HK` | 30-second sanity check |
+| `/stock-deep-analyzer:panel-only 600519` | Just run the 51-investor jury — no HTML report |
+| `/stock-deep-analyzer:scan-trap 600519` | Pump-and-dump / trap detection (8 signals) |
+| `/stock-deep-analyzer:segmental-model 300308` | 🆕 Bottom-up segmental revenue model · 3-scenario × 3-year projection · cross-checks top-down DCF |
 
 ---
 
@@ -230,11 +233,11 @@ python run.py 600519
 
 | Command | Implicit depth |
 |---|---|
-| `/quick-scan 600519` | lite |
-| `/panel-only 600519` | lite |
-| `/analyze-stock 600519` | medium (default) |
-| `/ic-memo 600519` | deep |
-| `/initiate 600519` | deep |
+| `/stock-deep-analyzer:quick-scan 600519` | lite |
+| `/stock-deep-analyzer:panel-only 600519` | lite |
+| `/stock-deep-analyzer:analyze-stock 600519` | medium (default) |
+| `/stock-deep-analyzer:ic-memo 600519` | deep |
+| `/stock-deep-analyzer:initiate 600519` | deep |
 
 ---
 
@@ -329,7 +332,7 @@ A: 5-8 minutes per stock. Most time is data fetching. Modeling itself is <1 seco
 A: No. All free (akshare / yfinance / DuckDuckGo / CNInfo / HKEXNews / Eastmoney / XueQiu backend). Zero API keys required. Optional `MX_APIKEY` (mx妙想 API) for enhanced A-share indicators — it's free too.
 
 **Q: Does it work for US / HK stocks?**
-A: Yes. `/analyze-stock AAPL`, `/analyze-stock BABA`, `/analyze-stock 00700.HK`. HK now has 3-layer kline fallback (Eastmoney → Sina → yfinance) since v2.7.2.
+A: Yes. `/stock-deep-analyzer:analyze-stock AAPL`, `/stock-deep-analyzer:analyze-stock BABA`, `/stock-deep-analyzer:analyze-stock 00700.HK`. HK now has 4-layer kline fallback (Eastmoney → Sina → yfinance → Yahoo Chart v8) since v2.13.7.
 
 **Q: Can I use English company names?**
 A: Best: use ticker codes (`BABA` / `00700.HK` / `600519.SH`). Name-resolution works for Chinese names (`贵州茅台` → `600519.SH`); for English names prefer the ticker.
@@ -349,6 +352,9 @@ A: Yes. akshare / Eastmoney / XueQiu / CNInfo / HKEXNews all serve international
 **Q: How do I know the report I'm about to read is reliable?**
 A: As of v2.9, self-review is **mechanically enforced**. 13 automated checks run before HTML generation; if any critical check fails, the report *physically cannot be shipped*. Check `.cache/<ticker>/_review_issues.json` for any warnings, each with a `suggested_fix`. Every time a new BUG is fixed, a matching check is added — so the same class of bug will be **auto-caught next run, no user feedback needed**.
 
+**Q: Does the plugin auto-notify me about new versions?**
+A: Yes, since v2.14.0. Every CLI run or agent session silently polls `api.github.com/.../releases/latest`; if a newer tag is out, you get a 3-option prompt (yes / skip-this-version / no) with the release notes summary. "Skip" suppresses the prompt only for that specific tag — once a newer version drops, you'll be asked again. Disable with `export UZI_NO_UPDATE_CHECK=1` (recommended for CI / Codex). Cached 6h to stay under GitHub's 60-req/h unauthenticated limit.
+
 **Q: I ran analyses on earlier versions — were those reports correct?**
 A: If you analyzed "industrial metals / machine tools / industrial machinery" stocks (like Yunnan Aluminum / 云铝股份 `000807.SZ`) before 2026-04-17, the `7_industry` dim was misclassified as "agricultural food processing" (BUG#R10). Clear the cache and re-run:
 ```bash
@@ -359,6 +365,13 @@ python run.py <ticker> --no-resume
 ---
 
 ## 🛠 Architecture in One Diagram
+
+> **v3.0–v3.2 pipeline refactor** (2026-04-23) · Two-file legacy monolith split into a pipeline architecture:
+> - `run_real_test.py`: 2105 → 735 lines (-65%) · pure functions moved to `lib/pipeline/score_fns.py`
+> - `assemble_report.py`: 2964 → 587 lines (-80%) · split into 5 `lib/report/*` submodules
+> - `python run.py <ticker>` now defaults to `pipeline.run_pipeline` · `UZI_LEGACY=1` falls back
+> - All v2.x public APIs preserved via `re-export` · 332 pytest pass · zero behavioral diff
+> See [CODEX.md](CODEX.md) / [AGENTS.md](AGENTS.md) for v3.2 repo layout details.
 
 ```
           user says "/analyze-stock BABA"

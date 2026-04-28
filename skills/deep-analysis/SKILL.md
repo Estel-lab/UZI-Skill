@@ -1,7 +1,7 @@
 ---
 name: deep-analysis
 description: 个股深度分析的核心工作流。当用户要求"深度分析 / 全面分析 / 帮我看看 / 值不值得买 / DCF / 机构建模 / 首次覆盖 / 投委会备忘录"等涉及个股研究的请求时触发。覆盖 A 股、港股、美股，产出 22 维数据 + 51 位大佬量化评审 + 6 种机构级估值建模 (DCF/Comps/LBO/3-Stmt/Merger) + 7 种研究产物 (首次覆盖/财报解读/催化剂日历/投资逻辑追踪/晨报/量化筛选/行业综述) + 6 种决策方法 (IC Memo/DD/Porter/单位经济/VCP/再平衡) + 杀猪盘检测，最终生成 Bloomberg 风格 HTML 报告 + 社交分享战报。关键词：股票、个股、深度分析、估值、DCF、comps、首次覆盖、IC memo、杀猪盘、龙虎榜、akshare。
-version: 2.10.8
+version: 3.3.1
 author: FloatFu-true
 license: MIT
 metadata:
@@ -14,37 +14,6 @@ metadata:
 
 > 你正在扮演一位**首席股票分析师**。你身边有一套完整的量化工具箱，但最终的判断和叙事**必须你来写**。
 > 脚本负责算数，你负责推理和下结论。
-
-## 🟢 Hermes 用户 · First-run setup（首次触发时自动处理）
-
-当你第一次被 Hermes 触发执行本 skill 且检测到缺少依赖（`ImportError: No module named akshare` 等），按下面顺序自动完成引导：
-
-1. 定位 skill 目录（Hermes 装在 `~/.hermes/skills/deep-analysis/`）
-2. 用 Hermes venv 装依赖：
-   ```bash
-   # 优先尝试 Hermes 自带 venv（装 skill 专属 Python 依赖不污染系统）
-   ~/.hermes/venv/bin/pip install -r ~/.hermes/skills/deep-analysis/requirements.txt
-
-   # 若 Hermes 用了其他 python（HERMES_PYTHON 或 $PATH 中的 python3），用它：
-   $(command -v python3) -m pip install -r ~/.hermes/skills/deep-analysis/requirements.txt
-   ```
-3. 中国大陆网络若 pip 卡住，加清华镜像：
-   ```bash
-   python3 -m pip install -r ~/.hermes/skills/deep-analysis/requirements.txt \
-       -i https://pypi.tuna.tsinghua.edu.cn/simple
-   ```
-4. 可选：把 `MX_APIKEY` / `TUSHARE_TOKEN` 写到 `~/.hermes/.env`（东财妙想 API / tushare 数据源增强）
-5. 装完再调 skill 的主入口：`python3 ~/.hermes/skills/deep-analysis/scripts/run_real_test.py <ticker>` 或 `python3 ~/.hermes/skills/deep-analysis/run.py <ticker> --depth lite --no-browser`
-
-**注意**：本 skill 不会改动 Hermes 核心环境，只在 venv 里装 akshare / pandas 等数据科学包。首次安装 100-200MB，后续触发秒级启动。
-
-首次装完后，在后续触发里**不要重复跑 pip install**（已在 venv 里）。只有遇到 `ImportError` 才重新装。
-
-## 🔵 其他平台用户
-
-- **Claude Code / Codex / Cursor**：按 `INSTALL.md` 走
-- **OpenClaw**：`hermes claw migrate` 迁移后自动装好
-- **命令行直跑**：按 README `git clone + pip install + python run.py` 走
 
 ## 🎯 角色定位（非常重要）
 
@@ -68,6 +37,32 @@ metadata:
    - ❌ "估值合理，基本面良好"
 5. **矛盾必须呈现，不准和稀泥**：DCF 与 Comps 结论冲突时，**把冲突写进报告**；51 评委分歧大时，**强调分歧本身是信息**。
 6. **Task 1 必须并行执行**（4 个子 agent / wave），串行跑 22 个 fetcher 直接扣分。
+
+### ⛔ HARD-GATE-UPDATE-PROMPT · 新版本提示（v2.14）
+
+<HARD-GATE>
+会话启动 hook 会后台检查 GitHub 最新 release，如果本地版本落后，会在
+`skills/deep-analysis/scripts/.cache/_global/update_prompt.md` 写入完整提示文案。
+
+**你必须在第一次回应用户前检查这个文件**：
+
+1. 读 `.cache/_global/update_prompt.md`（不存在 = 无需提示，跳过即可）
+2. 若存在 · 把文件完整内容作为 **第一条消息** 展示给用户
+3. 用 `AskUserQuestion` 或自然语言收集用户回答（y / s / n）
+4. 调用 `python3 -c "from lib.update_check import handle_answer; print(handle_answer('<ans>', '<latest>'))"` 把用户回答写回状态文件 · latest 从提示文案里的版本号提取
+5. 处理完删除 `.cache/_global/update_prompt.md`，这样同一会话不会重复弹
+6. 根据用户选择：
+   - `y` → 告诉用户按 README 安装章节的命令执行（Claude Code: `/plugin update stock-deep-analyzer` · git clone: `cd UZI-Skill && git pull` · Hermes: `hermes skills update wbh604/UZI-Skill/skills/deep-analysis`），然后继续用户原请求
+   - `s` → 直接继续用户原请求（handle_answer 已记 skip 到 cache）
+   - `n` → 直接继续用户原请求
+
+如果用户没有原请求（首次进入会话），展示完提示后等待用户开始对话。
+
+**绝不能**：
+- ❌ 跳过这个检查直接回应用户的分析请求
+- ❌ 把提示文案改短、改写、合并到其他消息里
+- ❌ 在用户只说 "分析 XX" 时直接开跑不先展示更新提示
+</HARD-GATE>
 
 ### ⛔ HARD-GATE-NAME · 股票名纠错（v2.3）
 
@@ -125,6 +120,41 @@ Payload 示例（agent 看到这个就知道该走 ETF 引导流程）:
 ```
 </HARD-GATE>
 
+### ⛔ HARD-GATE-PERSONA-ROLEPLAY · 51 评委 role-play 必须读 YAML persona（v2.15）
+
+<HARD-GATE>
+从 v2.15.0 起，`skills/deep-analysis/personas/*.yaml` 有全 51 位投资者的 persona 定义——
+**12 个 flagship** 手写（巴菲特 / 芒格 / 格雷厄姆 / 费雪 / 林奇 / 木头姐 / 索罗斯 / 达里奥 /
+段永平 / 张坤 / 赵老哥 / 章盟主）· **39 个 stub** 自动生成（auto_generated_stub · 仅作基础
+身份提示，主要还是靠 Rules 引擎）。
+
+**当你进入 stage1 后的 role-play 阶段时，必须**：
+
+1. **读 `skills/deep-analysis/personas/{investor_id}.yaml`**（id 跟 panel.json 里一致，如
+   `buffett.yaml` / `zhao_lg.yaml`）
+2. 对 **flagship persona**（12 个）· YAML 优先级 > Rules headline：
+   - 每条 headline 必须引用 `key_metrics` 里的具体条目（如巴菲特说"ROE 连续 10 年 > 15%"，
+     段永平说"PE 40 红线"，林奇说"PEG < 1"，赵老哥说"封板时间 + 市值 1000 亿上限"）
+   - 每条 reasoning 必须带 `voice` 字段的风格词（巴菲特的"Mr. Market"、林奇的"tenbagger"、
+     木头姐的"Wright's Law / exponential disruption"、赵老哥的"龙头战法"）
+   - **signal 必须与 persona 历史立场对齐**：巴菲特不会对 PE 882 的股票说买入；木头姐不会
+     对白酒说"五大平台之一"；赵老哥不会对 9000 亿市值说"打板"
+3. 对 **stub persona**（39 个 · _meta.status=auto_generated_stub）· Rules 引擎输出优先：
+   - YAML 仅补充身份信息（school / group）
+   - 不要假装比 Rules 知道更多
+   - 可以按 group 风格模板补充简短 voice，但不得编造具体历史言论
+4. **prefix-stable system message**（如果走 `lib.personas.build_system_message`）：
+   - 同一 SNAPSHOT JSON 只拼一次
+   - 51 persona 调用时 system message 字节级一致（prompt cache 命中）
+
+**绝不能**：
+- ❌ 给某个投资者写他历史上不可能持的立场（林奇对 EPS 0 的股票说 PEG 可算 · 木头姐对
+  OEM 代工说"必须重仓"）—— Rules 引擎历史上有 4 个此类硬伤，v2.15 就是为修这个
+- ❌ 用千篇一律的模板话术（"基本面良好"、"值得关注"、"估值合理"）—— 每个 persona 必须有
+  自己 voice 字段里的特色语言
+- ❌ 绕过 YAML 直接编 persona 历史立场（尤其是有 flagship 档案的 12 位 · 必须读档案）
+</HARD-GATE>
+
 ### ⛔ HARD-GATE-QUALITATIVE · 6 维定性维度必须 agent 深度分析（v2.4）
 
 <HARD-GATE>
@@ -158,6 +188,77 @@ Payload 示例（agent 看到这个就知道该走 ETF 引导流程）:
 - 跳过 task2.5 的问题清单自由发挥
 
 用户要求原话："不能只靠数据爬取，必须要 agent 介入高强度分析 + 多 agent 操作一定要加入进去"
+</HARD-GATE>
+
+### ⛔ HARD-GATE-PLAYWRIGHT-AUTOFILL · agent 必须主动触发 Playwright 兜底（v2.13.5）
+
+<HARD-GATE>
+用户反馈："我使用下来，并没有遇到模型主动使用 Playwright 的问题"。
+
+v2.13.5 起 **agent 介入阶段（stage1 → stage2 之间）必须主动触发 Playwright
+兜底**，不能等脚本 stage1 末尾自动跑就算完。原因：
+
+1. Stage1 末尾的 `autofill_via_playwright` 只跑一次 · 如果那时某维度 data 非空
+   但全是 "—"，`_dim_needs_fallback` 判不需要兜底，会被跳过
+2. Agent 介入后往往知道"哪些维度不够"（自查报告里报 warning/critical）· 应该
+   主动再跑一次 Playwright · 而不是在 `dim_commentary` 里写"数据缺失，参考同业"
+   这种废话
+
+**强制流程**（agent role-play 开始前必走）：
+
+**Step A · 读网络 profile**（新 v2.13.5 · `.cache/_global/network_profile.json`）
+```python
+import json
+from pathlib import Path
+prof_path = Path(".cache/_global/network_profile.json")
+if prof_path.exists():
+    net = json.loads(prof_path.read_text(encoding="utf-8"))
+    # net["domestic_ok"] / net["overseas_ok"] / net["search_ok"]
+    # net["recommendation"] 人读的一句话建议
+    print(f"网络: {net['recommendation']}")
+```
+
+**Step B · 读自查 issues 找低质量维度**
+```python
+issues_path = Path(f".cache/{ticker}/_review_issues.json")
+issues = json.loads(issues_path.read_text())
+low_quality_dims = [
+    i["dim"] for i in issues.get("issues", [])
+    if i.get("severity") in ("critical", "warning") and i.get("category") == "data"
+]
+# 例：["4_peers", "7_industry", "8_materials"]
+```
+
+**Step C · 主动触发 Playwright 兜底**（即使 stage1 跑过也再跑一次 · 用 FORCE=1）
+```python
+import os
+os.environ["UZI_PLAYWRIGHT_FORCE"] = "1"
+from lib.playwright_fallback import autofill_via_playwright
+summary = autofill_via_playwright(raw, ticker)
+# summary: {"attempted": X, "succeeded": Y, "failed": Z, "skipped_reasons": {...}}
+```
+
+**Step D · Playwright 失败的 dim · agent 用知识 + web_search 手工补**
+
+Playwright 也抓不到的维度（比如某些需要登录的页面）· **不能**在 commentary 里
+写空话 · 应该：
+1. 调 `WebSearch` 或 `web_search_trusted` 补原始资料
+2. 调 `mx_api`（若 MX_APIKEY 已设）
+3. 最后降级到 agent 的常识 + 明确标注"基于公开信息推断，非一手"
+
+**绝对禁止**：
+- 看到 `data.growth = "—"` 直接在 dim_commentary 里写"增速待补充"
+- 忽略 `_review_issues.json` 的 warning 直接出报告
+- Playwright summary.attempted=0 但未检查 `network_profile.json` 是否能用
+
+**绕过方式**（仅 lite / CI 环境）：
+- `UZI_DEPTH=lite` · lite 模式 `playwright_mode=off` · 此 HARD-GATE 自动跳过
+- `UZI_PLAYWRIGHT_ENABLE=0` · 显式禁用（但 deep 档不建议）
+
+v2.13.5 改动：
+- `lib/network_preflight.py` 升级 NetworkProfile（国内/境外/搜索 9 目标）· 写 cache
+- `lib/playwright_fallback.DIM_NETWORK_REQUIREMENTS` 每维声明所需网络能力
+- `autofill_via_playwright` 按 profile 自动跳过网络不可达的维度
 </HARD-GATE>
 
 ### 🎯 STYLE-WEIGHTING · 按股票风格动态加权（v2.7 · 自动）

@@ -38,17 +38,17 @@ if sys.platform == "win32":
         pass
     os.environ.setdefault("PYTHONIOENCODING", "utf-8")
 
-# ─── 路径设置 · hermes-compat (v2.10.8) ───
+# ─── 路径设置（v3.3.1 · 兼容 Hermes layout）───
 # run.py 可能出现在两个位置：
-#   1) repo 根目录（Claude Code / Codex / dev）：SCRIPTS_DIR = ROOT/skills/deep-analysis/scripts
-#   2) skill 目录里（Hermes `hermes skills install` 后）：SCRIPTS_DIR = ROOT/scripts
-# 纯加路径探测，不改动已有行为
+#   1) repo 根目录（Claude Code / Codex / Cursor / dev）：SCRIPTS_DIR = ROOT/skills/deep-analysis/scripts
+#   2) skill 目录里（Hermes `hermes skills install` 后只拉子目录）：SCRIPTS_DIR = ROOT/scripts
+# 探测两种 layout · 不破坏现有行为
 ROOT_DIR = Path(__file__).parent.resolve()
-_candidates = [
+_layout_candidates = [
     ROOT_DIR / "skills" / "deep-analysis" / "scripts",  # repo root layout
-    ROOT_DIR / "scripts",                               # skill-dir layout (Hermes)
+    ROOT_DIR / "scripts",                               # Hermes skill-dir layout
 ]
-SCRIPTS_DIR = next((c for c in _candidates if c.exists()), _candidates[0])
+SCRIPTS_DIR = next((c for c in _layout_candidates if c.exists()), _layout_candidates[0])
 sys.path.insert(0, str(SCRIPTS_DIR))
 os.chdir(str(SCRIPTS_DIR))
 
@@ -239,6 +239,37 @@ def start_cloudflare_tunnel(port: int = 8976):
     return public_url
 
 
+def _maybe_prompt_update() -> None:
+    """v2.14.0 · CLI 启动时检测 GitHub 新版本 · interactive y/s/n.
+
+    - 非 TTY（CI / Codex sandbox / 管道重定向）自动 skip
+    - UZI_NO_UPDATE_CHECK=1 env 禁用
+    - 网络异常 / GH API 限流 → silent skip（不阻塞正常流程）
+    - 用户选 s · 记到 .cache/_global/update_check.json · 下一版本来之前不再弹
+    """
+    if not sys.stdin.isatty():
+        return
+    try:
+        from lib.update_check import check_for_update, format_prompt, handle_answer
+    except Exception:
+        return
+    try:
+        info = check_for_update()
+        if info is None:
+            return
+        print(format_prompt(info))
+        try:
+            ans = input("请选择 [y/s/n]（回车默认 n）: ").strip()
+        except (EOFError, KeyboardInterrupt):
+            print()
+            return
+        print(handle_answer(ans, info.latest))
+        print()
+    except Exception as _e:
+        # update check 永远不阻塞主流程
+        pass
+
+
 def main():
     parser = argparse.ArgumentParser(
         description="游资（UZI）Skills · 个股深度分析",
@@ -266,6 +297,9 @@ def main():
     # 设 UZI_CLI_ONLY=1 让 self_review 对 agent_analysis.json 缺失 / 低 coverage 做宽容处理
     # （降级为 warning，仍出报告）。
     os.environ.setdefault("UZI_CLI_ONLY", "1")
+
+    # v2.14.0 · 自动检测 GitHub 新版本 · interactive prompt(y/s/n) · 非 TTY 静默
+    _maybe_prompt_update()
 
     # v2.10.2 · 深度选择（优先级: --depth > UZI_DEPTH env > UZI_LITE env > 默认 medium）
     try:
@@ -329,11 +363,35 @@ def main():
 
     # 运行分析（抑制 run_real_test 内部的自动开浏览器）
     os.environ["UZI_NO_AUTO_OPEN"] = "1"
+
+    # v3.0.0 · pipeline 为主干 · 默认启用
+    #   - UZI_LEGACY=1 → 强制走 legacy stage1+stage2（老路径 · 全量兼容）
+    #   - 不设 env    → 走 pipeline.run_pipeline（collect + score + synthesize 全新）
+    #   - pipeline 异常 → 自动回退 legacy · 绝不中断业务
+    # 原 UZI_PIPELINE=1 仍兼容接受（无操作 · 同默认）
+    _pipeline_succeeded = False
+    _force_legacy = os.environ.get("UZI_LEGACY") == "1"
+    _pipeline_requested = not _force_legacy
+    if _pipeline_requested:
+        try:
+            from lib.pipeline.run import run_pipeline
+            print("🚀 [run.py] v3.0.0 pipeline · 默认路径")
+            run_pipeline(args.ticker, resume=not args.no_resume)
+            _pipeline_succeeded = True
+        except Exception as e:
+            print(f"⚠️  [run.py] pipeline 异常 · 回退 legacy: {type(e).__name__}: {str(e)[:100]}")
+            import traceback
+            traceback.print_exc()
+            _pipeline_succeeded = False
+
     from run_real_test import main as run_analysis, stage1 as _stage1, stage2 as _stage2
 
     # v2.3 · 先过 stage1，捕获中文名解析失败场景，不静默跑出空报告
     from lib.market_router import is_chinese_name
-    if is_chinese_name(args.ticker) and not args.force_name:
+    if _pipeline_succeeded:
+        # pipeline 成功 · 报告已生成 · 跳过 legacy · 直接 fallthrough 到 report dir 查找
+        print("   → 走 pipeline · skip legacy stage1/stage2")
+    elif is_chinese_name(args.ticker) and not args.force_name:
         stage1_result = _stage1(args.ticker)
         # v2.10.4 · ETF/指数/可转债早退：stage1 已写 _resolve_error.json + 成分股清单
         if isinstance(stage1_result, dict) and stage1_result.get("status") == "non_stock_security":

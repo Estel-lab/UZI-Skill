@@ -1,6 +1,11 @@
 # Hermes Agent · 安装指南
 
+<<<<<<< HEAD
 UZI-Skill 的 Hermes 兼容分支（`hermes-compat`）可以直接用 Hermes 原生 `hermes skills install` 从 GitHub 安装。
+=======
+> **v3.3.1+ 起 main 分支已直接支持 Hermes**（之前需要切换到 `hermes-compat` 分支）·
+> 现在 `hermes skills install wbh604/UZI-Skill/skills/<skill>` 默认拉 main 即可工作。
+>>>>>>> main
 
 ## 最短路径（推荐）
 
@@ -16,6 +21,7 @@ hermes skills install wbh604/UZI-Skill/skills/trap-detector
 
 首次用 `/analyze-stock 600519.SH` 触发 `deep-analysis` 时，skill 会根据自身 SKILL.md 的提示自动让 LLM 跑一次 `pip install -r ~/.hermes/skills/deep-analysis/requirements.txt`，之后永久生效。
 
+<<<<<<< HEAD
 ## 可选：从 hermes-compat 分支装（更新频率更高）
 
 Hermes `hermes skills install` 默认拉 `main` 分支。想跟 `hermes-compat` 分支的最新改动可加 `@branch`：
@@ -25,13 +31,32 @@ hermes skills install wbh604/UZI-Skill@hermes-compat/skills/deep-analysis
 ```
 
 （此语法以 Hermes 当前版本支持为准；若不支持，用手动 clone 方案）
+=======
+## 升级提示（重要）
+
+如果你在 v3.3.1 之前装过 hermes 版本，升级前**先删掉旧的**再装新的：
+
+```bash
+hermes skills uninstall deep-analysis investor-panel lhb-analyzer trap-detector
+hermes skills install wbh604/UZI-Skill/skills/deep-analysis
+hermes skills install wbh604/UZI-Skill/skills/investor-panel
+hermes skills install wbh604/UZI-Skill/skills/lhb-analyzer
+hermes skills install wbh604/UZI-Skill/skills/trap-detector
+```
+
+旧版本（v2.10.8 之前）skill_dir 缺 `run.py` 或 `requirements.txt` · 这是历史报错的根因.
+>>>>>>> main
 
 ## 手动安装（clone + symlink）
 
 适合开发或想修改源码的用户：
 
 ```bash
+<<<<<<< HEAD
 git clone -b hermes-compat https://github.com/wbh604/UZI-Skill.git ~/UZI-Skill
+=======
+git clone https://github.com/wbh604/UZI-Skill.git ~/UZI-Skill
+>>>>>>> main
 mkdir -p ~/.hermes/skills
 for s in deep-analysis investor-panel lhb-analyzer trap-detector; do
   ln -sfn ~/UZI-Skill/skills/$s ~/.hermes/skills/$s

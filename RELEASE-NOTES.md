@@ -1,5 +1,6 @@
 # Release Notes
 
+<<<<<<< HEAD
 ## v2.10.8-hermes — 2026-04-18 (Hermes Agent 兼容适配 · 专属分支，不回灌 main)
 
 > **本版仅发布到 `hermes-compat` 分支**，main 保持 v2.10.7 不动 · Claude Code / Codex / Cursor 用户不受影响。
@@ -53,6 +54,1535 @@ hermes skills install wbh604/UZI-Skill/skills/deep-analysis
 | Codex (main) | ❌ | main 没动 |
 | Cursor (main) | ❌ | main 没动 |
 | Hermes | ✅ 新支持 | 从 hermes-compat 分支装 |
+=======
+## v3.3.1 — 2026-04-28 (Hermes 兼容回归修复)
+
+> **用户反馈**："UZI-Skill 是不是更新了不支持 hermes，之前的可以，现在开始报错了"
+
+### 根因
+
+v3.0/v3.1/v3.2 重构期间 main 上**完全没有 hermes 兼容代码**：
+
+- ❌ `INSTALL-HERMES.md` 不存在
+- ❌ `skills/deep-analysis/run.py` 不存在（hermes skill-dir 入口）
+- ❌ `skills/deep-analysis/requirements.txt` 不存在
+- ❌ 4 个 `SKILL.md` 没有 `metadata.hermes` 字段
+- ❌ `run.py` 路径硬编码 `skills/deep-analysis/scripts` · 不支持 hermes 装的 skill-dir layout
+
+但 README 仍写"Hermes：`hermes skills install wbh604/UZI-Skill/skills/deep-analysis`" · hermes 用户照做后装下来的目录缺关键文件 · 报错.
+
+`hermes-compat` 分支早在 v2.10.8 加过这些适配代码 · 但 v3.x 重构时**没有合回 main** · 同时 hermes-compat 分支自己也停滞在 v2.10.8 时代 · 落后 main 58 commit.
+
+### 修复
+
+把 hermes 兼容核心文件合并到 main：
+
+1. **`run.py` 路径双 layout 探测**（additive）：
+   ```python
+   _layout_candidates = [
+       ROOT_DIR / "skills" / "deep-analysis" / "scripts",  # repo root layout
+       ROOT_DIR / "scripts",                               # Hermes skill-dir layout
+   ]
+   SCRIPTS_DIR = next((c for c in _layout_candidates if c.exists()), _layout_candidates[0])
+   ```
+2. **新增 `skills/deep-analysis/run.py`**：完整 v3.0+ run.py 拷贝（含 pipeline 默认 / UZI_LEGACY / 自动更新检测）· hermes skill-dir layout 下作 entry
+3. **新增 `skills/deep-analysis/requirements.txt`**：hermes 安装时的 dep 清单
+4. **新增 `INSTALL-HERMES.md`**：v3.3.1 适配的安装指南（含旧版升级指引）
+5. **4 个 SKILL.md 加 hermes metadata**：`tags` + `related_skills` 让 hermes 知道 skill 关系
+6. **同步 hermes-compat 分支** = main（让该分支也包含 v3.x 全部功能）
+
+### 验证
+
+- 332 tests 全过
+- Hermes layout 模拟 e2e（`/tmp/hermes-test-skill/run.py 002217.SZ --no-browser`）：614 KB HTML 出报告 · 走 v3.0 pipeline · 跟 repo-root layout 行为一致
+- Repo root layout（`python run.py 002217.SZ`）仍正常
+
+### 升级建议（hermes 用户）
+
+旧版本 skill 目录残留可能导致冲突 · 重装：
+
+```bash
+hermes skills uninstall deep-analysis investor-panel lhb-analyzer trap-detector
+hermes skills install wbh604/UZI-Skill/skills/deep-analysis
+hermes skills install wbh604/UZI-Skill/skills/investor-panel
+hermes skills install wbh604/UZI-Skill/skills/lhb-analyzer
+hermes skills install wbh604/UZI-Skill/skills/trap-detector
+```
+
+### Hermes 现在跟 main 完全对齐
+
+之前 README 推荐 hermes 用户走 `hermes-compat` 分支 · 现在直接装 main 即可（v3.0 pipeline / v3.1 rrt 瘦身 / v3.2 assemble_report 拆分 / v3.3 segmental 全部可用）.
+
+---
+
+## v3.2.0 — 2026-04-23 (assemble_report.py 深度拆分 · -80%)
+
+> **用户反馈**："后面的继续全部完成 · 你就干就得了"
+
+### 主线升级
+
+`assemble_report.py` 从 **2964 → 587 行**（-80%）· 拆分为 5 个清晰子模块 · 业务零差异.
+
+### 拆分清单
+
+| 新模块 | 行数 | 内容 |
+|---|---|---|
+| `lib/report/svg_primitives.py` | 602 | 19 个 `svg_xxx` 图元 + COLOR_* 常量 |
+| `lib/report/dim_viz.py` | 742 | 19 个 `_viz_xxx` 维度特化 + `DIM_VIZ_RENDERERS` + `_score_class` |
+| `lib/report/institutional.py` | 532 | DCF/LBO/IC memo/catalyst/competitive/style_chip/data_gap_banner |
+| `lib/report/panel_cards.py` | 183 | GROUP_LABELS + jury_seat/chat/vote_bars/top3/risks |
+| `lib/report/special_cards.py` | 544 | friendly_layer/fund_managers/panel_insights/school_scores/debate |
+
+### `assemble_report.py` 剩余结构（587 行）
+
+| 段 | 行数 | 职责 |
+|---|---|---|
+| Header + imports + DIM_META + CAT_GROUPS | ~340 | 配置 + re-exports |
+| `render_dim_card` + `render_dim_category` + `_extract_kpi_value` | ~120 | 维度卡片框架 |
+| `assemble()` 主入口 | ~120 | HTML shell 组装 |
+
+### 向后兼容（100%）
+
+`assemble_report.py` 对所有抽离函数做 `from lib.report.XXX import *` · 所有历史调用保持工作：
+- `from assemble_report import render_fund_managers` ✅
+- `from assemble_report import svg_sparkline` ✅
+- `from assemble_report import _viz_financials` ✅
+
+### 回归测试
+
+- **332 tests 全过**
+- 4 个 grep 式测试扩展为同时读 `assemble_report` + 对应子模块
+- 真机 e2e · 002217 `assemble()` 0.0s 出 608KB HTML · 格式 100% 一致
+
+### v3 累计对比
+
+| 版本 | 焦点 | 行数缩减 |
+|---|---|---|
+| v3.0.0 | pipeline 架构默认启用 | - |
+| v3.1.0 | `run_real_test.py` 瘦身 | 2105 → 735 (-65%) |
+| v3.2.0 | `assemble_report.py` 拆分 | 2964 → 587 (-80%) |
+
+两个巨文件合计从 **5069 行 → 1322 行**（-74%）.
+
+### 非重构决策
+
+评估后不做的重构（属过度工程 · 风险远大于价值）：
+
+- ❌ **v3.1.1 · 22 fetcher adapter 内化**：`fetch_*.py` 仍是独立 CLI 工具（`python fetch_basic.py <ticker>`）· 内化会破坏 user contract · 且 22 × 300 行工作量巨大
+- ❌ **v3.3 · 删除 rrt.collect_raw_data**：是 `UZI_LEGACY=1` 的 fallback collector · 删了等于移除保险绳 · 跟 v3.0 "永远可回退 legacy" 设计冲突
+
+### Agent 入口指引完善（v3.2.0 post-release · PR #48）
+
+> **用户反馈**："codex 也要有独立指引 · 你看下修复一下吧"
+
+Codex 首次审视 v3.2.0 时误报 `scripts/run.py 缺失` · 根因是 repo 路径约定没有 agent-facing 文档。
+
+- **新增 `CODEX.md`** (210 行) · Codex 专属浓缩指引：必读前 60 秒 / v3.0+ 架构约定 / Pipeline 数据流图 / 审视任务清单模板 / 常见误判避坑表 / 文件大小红线
+- **`AGENTS.md` 顶部加 "🗺️ Repository Layout & Entrypoints (v3.2.0)"** · 完整目录树 + 入口 Cheat Sheet + 模块调用约定
+
+Codex re-audit 7/7 CHECK PASS · Verdict: CLEAN · 原 HIGH 误报消除.
+
+---
+
+## v3.1.0 — 2026-04-23 (run_real_test.py 深度瘦身 · rrt -65%)
+
+> **用户反馈**："开始 · 直接全部开始做吧"（请求 v3.1/v3.2/v3.3 继续重构）
+
+### 改动概览
+
+`run_real_test.py` 从 **2105 行 → 735 行**（-65%）· 业务零差异.
+
+### 搬迁 1 · 纯函数 → `lib/pipeline/score_fns.py` (-1228 行)
+
+从 rrt 搬：
+- `_f` · `score_dimensions` · `generate_panel` · `generate_synthesis`
+- `_auto_summarize_dim` · `_autofill_qualitative_via_mx` · `_extract_mx_text`
+- `_is_junk_autofill` · `_AUTOFILL_JUNK_PATTERNS` (v2.12.1)
+
+rrt 保留 re-export · 向后兼容 `rrt.score_dimensions(...)` 等调用.
+
+### 搬迁 2 · preflight/resolve/ETF → `lib/pipeline/preflight_helpers.py` (-166 行)
+
+从 rrt.stage1 开头搬：
+- 网络 preflight (GFW / 代理探测) · 失败自动 lite
+- 中文名解析 · 候选早退
+- ETF/LOF/可转债识别 · 持仓建议早退
+
+stage1 新入口：
+```python
+_pt = prepare_target(ticker, detect_lite_fn=_detect_lite_mode)
+if not _pt["ok"]:
+    return _pt["payload"]
+ti = _pt["ticker_info"]
+```
+
+### 性能
+
+| 场景 | v3.0 | v3.1 |
+|---|---|---|
+| 002217 resume e2e | 46.9s | **10.0s** |
+| pipeline.score | 10.6s | 0.1s |
+
+注：性能提升主要来自 v3.0 的 pipeline.score 解耦（v3.1 继承），代码组织更清晰是锦上添花.
+
+### 回归测试
+
+- 332 tests 全过
+- 字符串 grep 式 test 扩展为读 rrt + score_fns + preflight_helpers 三文件
+- 真机 e2e 002217 resume → 608KB HTML 报告 · 格式/数据与 v3.0 一致
+
+### 当前 rrt.py 结构（735 行）
+
+| 段 | 行数 | 状态 |
+|---|---|---|
+| Header + imports + FETCHER_MAP | 72 | 稳定 |
+| `collect_raw_data` (legacy collector) | 283 | ⚠️ 仍在 · 被 pipeline/collect 取代中 |
+| score_fns re-export | 12 | ✅ v3.1 |
+| `_detect_lite_mode` | 34 | 稳定 |
+| `stage1` | 160 | ✅ v3.1 瘦身 |
+| `stage2` | 149 | 稳定 |
+| `main` (CLI) | 25 | 稳定 |
+
+### 剩余重构（后续 v3.1.x / v3.2 系列）
+
+- **v3.1.1** · 22 fetcher adapter 内化 legacy 逻辑 · 删 `fetch_X.py` 冗余（~5-8h）
+- **v3.2.0** · `renderer/` 21 个 stub 升级为 `assemble_report.py` 的完整实现 · assemble_report 改 import renderer/ · 瘦身到 < 800 行（~3-5h）
+- **v3.3.0** · `collect_raw_data` 标 deprecated · legacy stage1 改调 pipeline.collect · rrt 进一步到 < 500 行
+
+---
+
+## v3.0.0 — 2026-04-23 (pipeline 架构为主干 · 默认启用)
+
+> **用户反馈**："直接重构到 3.0 吧 · 按你推荐的来"
+
+### 主线升级 · v3.0.0 pipeline 架构默认启用
+
+v2.15.x 用 `UZI_PIPELINE=1` opt-in 跑了两周（7 股 dark-launch 零回归）· 现在切为默认.
+
+**改动**：
+
+- `run.py::main` · pipeline.run_pipeline **默认启用** · 以前 opt-in 的 `UZI_PIPELINE=1` 变成 no-op（等于默认）· 新增 `UZI_LEGACY=1` 开关强制走老 stage1/stage2 作为保险
+- pipeline 异常自动回退 legacy · 附 traceback 便于排查 · 业务零中断
+
+### Phase 6c · pipeline.score 解耦 legacy stage1（性能 · 正确性）
+
+以前 `pipeline.score_from_cache(ticker)` 的实现是调 `rrt.stage1(ticker)` —— 但 stage1 会 **重新跑 collect 段** · pipeline 前面刚 collect 完 · 重复 5-10 分钟.
+
+现在 `score_from_cache` 直接调 rrt 的纯函数：
+
+```python
+raw = json.load(raw_data_path)
+rrt._autofill_qualitative_via_mx(raw, ticker)   # 原地改
+autofill_via_playwright(raw, ticker)            # 原地改
+dims_scored = rrt.score_dimensions(raw)         # 纯函数
+panel       = rrt.generate_panel(dims_scored, raw)
+synthesis   = rrt.generate_synthesis(raw, dims_scored, panel)
+```
+
+**性能实测（002217 resume）**：全流程 46.9s（collect + score + synth + render + png）· 以前 opt-in 模式约 120s+.
+
+### Pipeline 预检 guards
+
+pipeline 入口加了 `_preflight_guards(ticker)` · 识别中文名 / ETF / LOF / 可转债 → `ValueError` · run.py 自动回退 legacy（legacy 有完整的 resolve / classify / candidate 建议交互）· 用户体验无降级.
+
+### 架构现状（v3.0.0）
+
+| 模块 | 状态 | 说明 |
+|---|---|---|
+| `lib/pipeline/collect.py` | ✅ 主干 | 22 BaseFetcher adapter 并发 · max_workers=6 |
+| `lib/pipeline/score.py` | ✅ 主干 | 纯函数编排 · 不再 delegate stage1 |
+| `lib/pipeline/synthesize.py` | ⚠️ 薄 wrapper | 调 stage2（stage2 只读 cache 不 collect · 安全） |
+| `lib/pipeline/fetchers/` | ✅ 22/22 | 每个 adapter 内部仍调 legacy `fetch_X.main()` |
+| `lib/pipeline/renderer/` | ✅ 21/21 | 已有但 assemble_report.py 暂未改调 · Phase 8b |
+| `run_real_test.py` | ⚠️ 仍在 | 提供纯函数给 pipeline 调 · stage1/stage2 作 fallback |
+| `assemble_report.py` | ⚠️ 2964 行 | 暂不瘦身 · 风险高 · 后续 minor 版本做 |
+
+### 后续计划（非阻塞）
+
+- **v3.1** · Phase 8a · fetcher adapter 内化 legacy 抓取逻辑 · 删 `fetch_X.py` legacy 文件
+- **v3.2** · Phase 8b · assemble_report.py 改 import renderer/ · 瘦身到 < 400 行
+- **v3.3** · run_real_test.py 瘦身到 < 200 行（只保留 stage1/stage2 兜底入口）
+
+### 回归测试
+
+- 332 tests 全过（253 legacy + 79 pipeline）
+- 真机 e2e · 002217 resume 模式 46.9s 成功出报告
+- pipeline.score 耗时 10.6s（以前 180s+）
+
+### 破坏性变更
+
+⚠️ 默认行为变化：
+- **之前**：`python run.py 300470.SZ` → legacy stage1+stage2（老路径）
+- **现在**：`python run.py 300470.SZ` → pipeline.run_pipeline（新路径）
+- **回滚**：`UZI_LEGACY=1 python run.py 300470.SZ` · 强制走老路径
+
+测试和报告输出保持 100% 兼容 · raw_data.json / dimensions.json / panel.json / synthesis.json schema 一致.
+
+---
+
+## v2.15.5 — 2026-04-23 (评分公式重校准 · 混合公式 + 极化拉伸)
+
+> **用户反馈**："现在评分大多数都在一个区间内徘徊，你看看是什么问题，是否需要优化"
+
+### 诊断（采 7 股 · 331 个非 skip 打分）
+
+- 单 investor score: mean=43.7, stdev=30.3, range 0-100（分布其实很宽）
+- 但 `panel_consensus` 聚集在 40-55 区间 · 7 流派内分歧 stdev 往往 <15
+- **根因 1**：v2.11 公式 `(bullish + 0.6*neutral)/active*100` 只看 signal 计数 · 把连续 score 压成 3 分类（65/35 阈值）· 丢失"程度"信息
+- **根因 2**：价值/成长派规则严苛 · 平均 score 35 左右 · 比技术/量化派低 20 分 · 结构性居中
+
+### 修法 · 混合公式 + 极化拉伸
+
+```python
+# Step 1 · 混合连续分 + 离散票
+score_mean    = mean(score for active)           # 0-100 连续 · 反映强度
+vote_weighted = (bullish + 0.6*neutral)/active*100  # 原 v2.11 · 保留投票机制
+raw           = 0.65 * score_mean + 0.35 * vote_weighted
+
+# Step 2 · 极化拉伸（50 为中心，k=1.3）· 让两端更极端
+final = clip(50 + (raw - 50) * 1.3, 0, 100)
+```
+
+**效果对比（7 股样本）**：
+
+| 指标 | v2.11 公式 | v2.15.5 公式 |
+|---|---|---|
+| 总盘 consensus mean | 46.9 | 42.2 |
+| 总盘 consensus range | 16.5-77.9 | 8.4-76.8 |
+| 强势 300308 | 77.9 | 76.8（持平） |
+| 弱势 600120 | 16.5 | 8.4（更弱）|
+| 002217 F 游资 | 51.0 关注 | 43.7 谨慎（修正高估）|
+| 002217 G 量化 | 50.0 关注 | 59.3 关注（修正低估）|
+
+**002217 (中密控股) v2.15.5 分布**：
+
+| 流派 | consensus | 实分均值 | 投票共识 | verdict |
+|---|---|---|---|---|
+| 经典价值派 | 34.7 | 37.3 | 40.0 | 回避 |
+| 成长派 | 27.2 | 36.5 | 25.0 | 回避 |
+| 宏观派 | **67.3** | 60.8 | 68.0 | **买入** |
+| 技术派 | 38.1 | 41.2 | 40.0 | 谨慎 |
+| 中式价投 | 29.5 | 36.5 | 30.0 | 回避 |
+| A 股游资 | 43.7 | 42.0 | 51.0 | 谨慎 |
+| 量化派 | 59.3 | 61.0 | 50.0 | 关注 |
+
+结论清晰：**宏观有利但基本面乏力**. 以前"F 游资 51 关注"被 neutral 投票机制高估 · 实分 42 说明大家其实都是"不看好但也不讨厌"的 40 分心态 · 新公式修正了.
+
+### 改动
+
+- `run_real_test.py::generate_panel` · 引入 `SCORE_WEIGHT=0.65 / VOTE_WEIGHT=0.35 / POLARIZE_K=1.30` 常量 · 加 `_polarize()` helper · 总盘 + school_scores 同步升级
+- `panel.school_scores[g]` 新增 `score_mean` / `vote_consensus` 两个分量字段 · `consensus` 为极化后最终值
+- `consensus_formula` 诊断 dict 新增 `score_weight` / `vote_weight` / `polarize_k` / `score_mean` / `vote_weighted` / `consensus_raw` / `consensus_final`
+- `assemble_report.py::render_school_scores` 卡片下方显示"流派分 X.X · 实分均值 · 投票共识" · hover tip 带全分量
+- `lib/self_review.py::check_consensus_formula_sanity` 版本校验放宽 · 支持 v2.9.1 / v2.11 / v2.15.5
+
+### 回归测试
+
+- `tests/test_v2_15_4_school_scores.py` 升级为 9 tests · 含混合公式数学 + 极化边界 + 分量字段 · 全过 ✅
+- `tests/test_v2_11_scoring_calibration.py::test_consensus_formula_version_label_v2_11` 更新接受 v2.15.5
+- 总套件 253 tests 全过
+
+---
+
+## v2.15.4 — 2026-04-22 (按流派打分 · 7 大学派各自评分)
+
+> **用户反馈**："打分系统我觉得可能还要优化一下，我们现在有几个流派，那么除了有一个最终分数，还要有不同流派各自给出的分数"
+
+### 新功能 · 按流派评分 (school_scores)
+
+以前 `panel.json` 只有一个 `panel_consensus` 总分 · 51 位评委的分歧被聚合掉看不出来. v2.15.4 起每一次跑都会产出 **7 大流派各自的 consensus / avg_score / verdict**:
+
+| 流派 | 代表人物 | 成员数 |
+|---|---|---|
+| A 经典价值派 | 巴菲特 / 格雷厄姆 / 费雪 / 芒格 | 6 |
+| B 成长派 | 彼得林奇 / 欧奈尔 / 蒂尔 / 伍德 | 4 |
+| C 宏观派 | 索罗斯 / 达里奥 / 马克斯 | 5 |
+| D 技术派 | 利弗莫尔 / Minervini / 达瓦斯 | 4 |
+| E 中式价投 | 段永平 / 张坤 / 朱少醒 / 冯柳 | 6 |
+| F A 股游资 | 章盟主 / 孙哥 / 赵老哥…… | 23 |
+| G 量化派 | Simons / Thorp / Shaw | 3 |
+
+**实测示例（002217 · 中密控股）**：
+
+| 流派 | 共识度 | 均分 | 判定 | 信号分布 |
+|---|---|---|---|---|
+| 经典价值派 | 40.0 | 37.3 | 谨慎 | 0📈 4⚖️ 2📉 |
+| 成长派 | 25.0 | 36.5 | 回避 | 1📈 0⚖️ 3📉 |
+| **宏观派** | **68.0** | 60.8 | **买入** | 1📈 4⚖️ 0📉 |
+| 技术派 | 40.0 | 41.2 | 谨慎 | 1📈 1⚖️ 2📉 |
+| 中式价投 | 30.0 | 36.5 | 回避 | 0📈 3⚖️ 3📉 |
+| A 股游资 | 51.0 | 42.0 | 关注 | 0📈 17⚖️ 3📉 |
+| 量化派 | 50.0 | 61.0 | 关注 | 1📈 0⚖️ 1📉 |
+
+一眼可见：**宏观派买入 vs 成长派回避**分歧 43 分 · 说明这只票属"宏观友好但成长性不足"的结构性矛盾票 · 以前只看总分 45.5 "谨慎"看不出来.
+
+### 实现
+
+- `run_real_test.py::generate_panel` 末尾新增 `school_scores` dict · 每个流派用和总盘一致的 `(bullish + 0.6*neutral)/active * 100` 公式
+- `_consensus_to_verdict` 阈值与综合分保持对齐（80 重仓 / 65 买入 / 50 关注 / 35 谨慎 / else 回避）
+- `synthesis.json` 同步携带 `school_scores` · 报告层无须回拉 panel.json
+- `assemble_report.py::render_school_scores` 渲染 7 卡片网格 · 配色按 verdict 语义
+- `assets/report-template.html` 新增 `<!-- INJECT_SCHOOL_SCORES -->` 锚点
+
+### 回归测试
+
+新增 `tests/test_v2_15_4_school_scores.py`（7 tests）· 全部过 ✅
+总套件 251 tests 仍 100% 通过.
+
+---
+
+## v2.15.3 — 2026-04-21 (fetch_capital_flow 严重性能 bug hotfix)
+
+> **用户反馈**："数据源这一块还是很不稳定，请你检查好" · 审计发现最严重的 bug 在 fetch_capital_flow.
+
+### Bug · 每股分析都重抓全 A 大宗/解禁/融资数据集（3+ min/股）
+
+**症状**：分析一只股票时 12_capital_flow 维度卡 3-5 min · 多股批量几小时完不了.
+
+**根因**：`fetch_capital_flow.py::main()` 里这 4 个调用对每只股票都会**重抓全市场数据集**后再 filter：
+```python
+ak.stock_dzjy_mrtj(start_date="20260101", end_date="20261231")      # 全年大宗交易 · ~3900 条
+ak.stock_restricted_release_summary_em(symbol="近一年")              # 近一年解禁 summary
+ak.stock_restricted_release_detail_em(start_date=..., end_date=...) # 全年解禁日历 · ~1600 条
+ak.stock_margin_detail_szse(date=None)                               # 最新一天深市融资明细
+```
+这些数据**全市场共享**但没做 universe-level cache · 每股都重下一遍 · 严重浪费带宽 + 时间.
+
+**修法**（`fetch_capital_flow.py`）：
+- 新增 4 个 `_universe_*()` helper · 用 `cached("_universe", key, ..., ttl=24h)` 做 module-level cache
+- 首次调用全 A 数据 · 所有股票共享 · 24h TTL
+- `main()` 里从 universe 数据 filter 出本股记录（O(n) → O(1) 之后）
+
+### 实测效果（002217 · 合力泰）
+
+| 调用 | 未 cache | cache 命中 |
+|---|---|---|
+| `_universe_dzjy` (3896 条大宗) | ~100s | **0.01s** |
+| `_universe_release_detail` (1647 条解禁) | ~100s | **0.00s** |
+| `_universe_release_summary` | ~30s | **0.00s** |
+| `_universe_margin_detail` (SZ) | ~30s | **0.00s** |
+
+**首次**：382s（下载全 A 数据建 cache）
+**二次**：cache 100% 命中 · universe 部分 **0.01s 总耗时** · 整体加速 **100+ 倍**
+
+（二次跑整体仍有延迟是因为 `fetch_northbound` / `stock_zh_a_gdhs` / `stock_individual_fund_flow` 等 per-stock 接口走 push2 · 网络层 SSL 偶尔慢 · 不是 universe 数据问题）
+
+### 稳定性审计总体结论
+
+用户反馈后做了全面审计（002217 cache 逐维体检）：
+- **健康 18 / 薄弱 5 / 崩坏 0** · 78% 稳定率
+- 5 个薄弱 dim 真实根因分类：
+  - 🔴 `12_capital_flow` · **性能 bug** · ✅ 本版修
+  - 🟡 `16_lhb` · 小盘股近期真的没上龙虎榜 · API 返空是对的
+  - 🟡 `19_contests` · xueqiu SSL 偶尔挂 · 已有 fallback
+  - 🟡 `6_research` · 小盘股券商覆盖少 · consensus_eps 真空是正常
+  - 🟡 `11_governance` · 部分股无股东大会披露 · 真实数据特性
+
+### 测试
+
+`tests/test_v2_15_3_capital_flow_cache.py` · **6 case**：
+- `_universe_*()` helper 存在性 · 用 `"_universe"` 作 cache ticker key
+- cache 命中时 < 0.1s · 不再调 akshare
+- `main()` 里不允许直调 `stock_dzjy_mrtj` / `stock_restricted_release_*` / `stock_margin_detail_*`（必须走 universe）
+
+pytest 全量 **271 passed**（265 baseline + 6 新 · 零回归）。
+
+### 版本
+
+- `2.15.2 → 2.15.3`（patch · 性能 hotfix）
+- 5 manifest 同步
+- Branch: `feature/v2.15.3-capital-flow-cache`
+- Tag: `v2.15.3`
+
+---
+
+## v2.15.2 — 2026-04-21 (Gemini CLI 安装修复 + 网络自检增强)
+
+> **Issue 驱动** · 处理 GitHub 社区反馈：
+> - **#36** · Veitkwok 报告 Gemini CLI 安装失败
+> - **#30** · 3150214587 希望代理 / 数据源自检修复机制
+
+### Bug 1 · Gemini CLI 安装报错（#36）
+
+**症状**：`gemini extensions install https://github.com/wbh604/UZI-Skill` 失败，报 `missing "version"`。
+
+**根因**：`gemini-extension.json` 缺 `version` 字段 · Gemini CLI 硬校验。
+
+**修复**：
+- `gemini-extension.json` 加 `"version": "2.15.2"`
+- `.version-bump.json::files` 新增 `gemini-extension.json` · 未来 bump 自动同步（避免再漏）
+
+### Feature 2 · 网络自检增强（#30）
+
+**需求**：用户通过 Clash 等代理时 · 环境偶尔不稳 · 希望 plugin 能自动诊断 + 给出修复建议。
+
+**实现**（`lib/network_preflight.py`）：
+1. **本地代理端口检测**（`_detect_local_proxy`）
+   - 扫 6 个常见端口：Clash 7890/7891/7897 · V2rayN 10808 · Shadowsocks 1080 · Charles 8888
+   - 若检到本地代理但 `HTTPS_PROXY` 未设 → 提示具体 export 命令
+   - 若 `HTTPS_PROXY` 已设但代理没启 → 提示 unset
+2. **数据源分组诊断**（`diagnose_source`）
+   - 按 3 组（domestic / overseas / search）独立汇报
+   - 每组列出受影响的具体 fetcher（如 "overseas 挂 · 影响 yfinance / _yahoo_v8_chart / CoinGecko"）
+   - 每组带多行 `fix` 建议（"检查 Clash 规则 / 切全局模式 / unset 代理"）
+3. **NetworkProfile 新增字段**
+   - `local_proxy: dict` · 本地端口检测结果
+   - `diagnostics: list` · 分组诊断列表
+4. **verbose 模式输出**
+   - 旧：一行 recommendation
+   - 新：recommendation + Clash hint + 每组诊断 + 每组 fix（多行）
+5. **cache 写入** · `.cache/_global/network_profile.json` 含 `local_proxy` + `diagnostics` · agent/sub-agent 可读取
+
+### 效果
+
+```
+🌐 网络预检 (3/9 通 · 均延迟 15ms · proxy=no)
+  [国内 2/3]
+    ✓  10ms  push2.eastmoney.com ...
+    ✗ ConnectionRefusedError  stock.xueqiu.com ...
+  [境外 0/3] ...
+
+  ⚠ 检测到本地代理运行（Clash Verge）但 env 未设 HTTPS_PROXY · 脚本默认不走代理
+     export HTTPS_PROXY=http://127.0.0.1:7897 && export HTTP_PROXY=http://127.0.0.1:7897
+
+  🔧 数据源诊断（2 组受影响）
+     [overseas] 🔴 不通 · 影响 3 个 fetcher
+       主要问题：Yahoo / CoinGecko 挂 · 美股港股数据降级
+       1. 浏览器测试 finance.yahoo.com 能否访问
+       2. 开 Clash 全局模式 ...
+     [search] 🔴 不通 · 影响 5 个 fetcher
+       ...
+```
+
+### 测试
+
+`tests/test_v2_15_2_network_enhance.py` · **10 case**：
+- `gemini-extension.json` 含 version 字段
+- `.version-bump.json` 纳入 gemini manifest
+- 本地代理端口检测（含 mock Clash 场景）
+- 分组诊断 3 态（全挂 / 全通 / 部分）
+- NetworkProfile 新字段存在
+- run_preflight 写 cache 含 `diagnostics` + `local_proxy`
+
+pytest 全量 **265 passed**（255 baseline + 10 新 · 零回归）。
+
+### 版本
+
+- `2.15.1 → 2.15.2`（patch · issue hotfix + 网络 UX 增强）
+- **5 manifest 同步**（新增 gemini-extension.json）
+- Branch: `feature/v2.15.2-gemini-network-fix`
+- Tag: `v2.15.2`
+- Close GitHub issues: **#36 · #30**
+
+---
+
+## v2.15.1 — 2026-04-20 (报告质量 2 bug hotfix · 实测 300470 发现)
+
+> 用户用 v2.15.0 实测 300470.SZ（中密控股）· 指出报告里 2 个长期存在的视觉/准确性 bug · 本次 hotfix。
+
+### Bug 1 · 基金持仓一堆 "0.0% 假数据" fund-card
+
+**症状**：报告里公募基金持仓区域常看到 15-30 张 fund-card · 第 5/6/7 张以后的"5 年累计 +0.0% / 年化 +0.0% / 回撤 -0.0% / 夏普 0.00"——数据明显缺失但被当实测数据渲染。
+
+**根因**：
+1. `fetch_fund_holders._build_row_full` 在 `compute_fund_stats` 返空（`fund.eastmoney.com` SSL 失败 / 新基金数据不足）时，用 `stats.get("return_5y", 0)` 写 **0**（非 None），没降级为 lite
+2. `assemble_report.render_fund_managers` 所有 manager 都被当 full card 渲染 · `INITIAL_SHOW=6` 硬编码，lite 混进前 6 张
+
+**修复**：
+- `fetch_fund_holders.py` · stats 为空时 return `_row_type="lite"` + 全部数值字段 `None`（有真实 stats 才返 full）
+- `assemble_report.py::render_fund_managers` · for 循环里 `is_lite` 跳过 full-card 生成 · `INITIAL_SHOW = min(6, len(cards))` 动态
+- **新增 lite 行去重 + cap 30**：按 `fund_code` 去重（避免富国天惠 A/B/C/D 4 个份额重复列）· 按 `position_pct` 排序取 top 30 · 余量用"另有 N 家"提示
+
+### Bug 2 · 14_moat 护城河被贵州茅台数据污染
+
+**症状**：中密控股 300470 的报告 14_moat 区 4 个字段（intangible/switching/network/scale/rd_summary）**全部显示 "贵州茅台表示，技术创新在公司发展历程中始终扮演关键角色..."**（茅台成立研究院的新闻）
+
+**根因**：`fetch_moat.py` 对生僻公司用 DDGS 搜 "专利/核心技术/品牌壁垒" → DDGS 返回 popular stocks（茅台）的文章 → 结果只做 `_is_garbage`（字典/百科）过滤，没做"结果是否真含目标公司名"的过滤。
+
+**修复**（`fetch_moat.py`）：
+- 新增 `_SUPERSTAR_POLLUTERS` 列表（15 个易污染股：茅台/五粮液/宁德/腾讯等）
+- 新增 `_result_mentions_company()` · 结果 title+body 不含目标公司名就丢
+- polluter 集合动态排除目标本身（分析茅台时茅台自己的结果正常保留）
+
+### 验证
+
+**Playwright 实测 300470.SZ 重跑**：
+- fund 区 **0 张 0.0% 假 card** → 30 个 compact row + header "722 家公募基金持有本股 · 头部 0 家有完整 5Y 业绩"
+- 14_moat 全报告 **0 茅台污染字样**（之前 4 处）
+
+### 测试
+
+`tests/test_v2_15_1_fund_lite_rendering.py` · **11 case**：
+- fund lite 降级（7 case）：`_row_type='lite'` 正确标注 / `render_fund_managers` 跳 lite / `INITIAL_SHOW` 动态 / 全 full 无 compact / 全 lite 无 card / 核心反向测 0.0% card 不出现
+- moat 污染过滤（4 case）：polluter 结果被丢 / 真含目标公司保留 / 无关结果保守过滤 / 目标本身是 polluter 自己不被误伤
+
+pytest 全量 **255 passed**（baseline 244 + 11 新 · 零回归）。
+
+### 版本
+
+- `2.15.0 → 2.15.1`（patch · 报告质量 hotfix）
+- 4 manifest 同步
+- Branch: `feature/v2.15.1-fund-lite-render`
+- Tag: `v2.15.1`
+
+---
+
+## v2.15.0 — 2026-04-20 (YAML persona 接入 agent role-play · 取长补短 augur)
+
+> **借鉴来源**：xgzlucario/augur（18 投资者 LLM-council CLI）· 验证后发现 YAML persona
+> 格式能系统性修复当前 Rules 引擎 4 类"历史立场错位"硬伤。
+
+### 双盲测试结果（v2.14 baseline vs v2.15 YAML）
+
+| 对比维度 | Rules 胜 | YAML 胜 |
+|---|---|---|
+| 准确性（方向对不对） | 8/15 | 14/15 |
+| 入戏感（像不像本人） | 2/15 | 15/15 |
+| 可操作性 | 4/15 | 13/15 |
+| **明显错误** | **4 个硬伤** | **0** |
+
+4 个 Rules 硬伤典型：
+- 合力泰 × 木头姐："必须重仓"（她不会买 OEM 显示模组）
+- 合力泰 × 赵老哥："观望"（这恰恰是他最爱的低价题材）
+- 茅台 × 巴菲特："买入"（他公开说过"不懂中国白酒"）
+- 中际旭创 × 段永平："强买"（PE 63 超他 40 红线）
+
+### 混合架构 · 保留自有优势
+
+```
+  22 维 fetcher → raw_data.json    ← 保留（vs augur 只靠 LLM web search）
+       ↓
+  Rules 引擎    → panel.json       ← 保留（确定性兜底 · agent 失败仍可出报告）
+       ↓
+  YAML persona → agent role-play  ← 🆕 新增（修正 Rules 硬伤）
+       +                              flagship 12 手写，优先级 > Rules headline
+  prefix-stable                      stub 39 自动生成，Rules headline 优先
+  system message
+       ↓
+  agent_analysis.json → stage2 merge → HTML + 朋友圈 + 战报
+```
+
+### 新增目录 `personas/` · 51 YAML 文件
+
+**12 Flagship（手写 · philosophy + key_metrics + avoids + a_share_view + voice + famous_positions）**：
+- Group A 经典价值：buffett / graham / fisher / munger
+- Group B 成长：lynch / wood
+- Group C 宏观：soros / dalio
+- Group E 中式价值：duan / zhangkun
+- Group F 游资：zhao_lg / zhang_mz
+
+**39 Stub（自动生成 · _meta.status=auto_generated_stub · 仅基础身份 · Rules headline 优先）**：
+- templeton / klarman（价值）· oneill / thiel（成长）· marks / druck / robertson（宏观）
+- livermore / minervini / darvas / gann（技术派）· zhushaoxing / xiezhiyu / fengliu / dengxiaofeng（中式）
+- sun_ge / fs_wyj / yangjia / chen_xq / hu_jl 等 19 位游资
+- simons / thorp / shaw（量化）
+
+Stub 会随使用逐步迭代为 flagship · 每当用户反馈"某某评委说话不像本人"就升级对应 YAML。
+
+### 新增模块
+
+- **`lib/personas.py`**（~180 行）· `Persona` dataclass + `load_persona(id)` + `build_system_message(snapshot, lang)` + `build_persona_user_message(persona, ticker)` · 零依赖迷你 YAML parser（不引入 pyyaml）
+- **`lib/i18n.py`**（~30 行）· `language_instruction(lang)` + `get_language()` · zh 默认 / en 供 Hermes 国际用户 · env `UZI_LANG=en`
+- **`SKILL.md`** 加 `HARD-GATE-PERSONA-ROLEPLAY` · agent role-play 时必须读 YAML
+
+### 吸收 augur 的 prefix-stable prompt cache 优化
+
+`personas.build_system_message(snapshot_json, lang)` 确保字节级一致 ·
+51 persona 调用共用一个 system message · Anthropic / OpenAI prompt cache 能命中前缀 ·
+预估 input token 成本 -50~90%（按 deep 档 51 人 × 3-5k token 计算，单次分析省数千 token × 51 人）。
+
+### 测试
+
+`tests/test_v2_15_0_persona_layer.py` · **14 个回归**：
+- 51 persona 文件全部存在 · 12 flagship 身份正确 · 39 stub 标记 auto_generated_stub
+- flagship 有 philosophy + key_metrics + voice + a_share_view 必填
+- YAML id 跟 panel.json investor_id 1:1 对应
+- `to_prompt_block` 输出含 Philosophy/Voice 段且 < 2500 字符
+- `build_system_message` 同 snapshot + lang prefix 稳定（prompt cache 前提）
+- i18n zh 默认 / en opt-in / env override / unknown 回退 zh
+
+**全量 244 passed**（baseline 230 + 14 新 · 零回归）。
+
+### 影响面
+
+- **agent role-play 质量显著提升**：12 flagship 评委的 headline / reasoning 会明显"更像本人"
+- **Rules 引擎仍完整兜底**：agent 失败 / 不可达时，Rules 骨架分仍能出报告（不依赖 LLM）
+- **成本可控**：prefix cache 命中能省 50-90% input token
+- **i18n 准备就绪**：Hermes 英文用户 `UZI_LANG=en` 可切换输出语言
+
+### 版本
+
+- `2.14.0 → 2.15.0`（minor bump · 新增用户可见的 role-play 质量层）
+- 4 manifest 同步
+- Branch: `feature/v2.15.0-persona-layer`
+- Tag: `v2.15.0`
+
+---
+
+## v2.14.0 — 2026-04-20 (自动检测 GitHub 新版本 · interactive y/s/n prompt)
+
+> **用户请求**：每次使用插件时自动检测 GitHub 是否有新版本 · 有更新时弹提示 + 改动说明 · 支持"是/跳过本版/否"三选 · 跳过本版后直到下一版出来才再弹。
+
+### 新增 `lib/update_check.py`（~180 行）
+
+核心 API：
+- `check_for_update(force=False) -> UpdateInfo | None` · 返 `{current, latest, notes, url}` 或 None
+- `mark_skipped(version)` · 记用户 skip 决策到 `.cache/_global/update_check.json`
+- `handle_answer(ans, latest)` · y/s/n 回答归一处理
+- `format_prompt(info)` · 统一展示模板（CLI + agent 共用）
+
+**状态文件** `.cache/_global/update_check.json`：
+```json
+{
+  "skipped_version": "2.14.1",
+  "last_check_at": 1713552000,
+  "cached_latest": "2.14.1"
+}
+```
+
+**三态逻辑**：
+- `current < latest` 且 `skipped_version != latest` → 弹提示
+- `current < latest` 且 `skipped_version == latest` → 跳过本次（等下一版再弹）
+- `current >= latest` → 不弹
+
+### 两档触发点
+
+1. **CLI 直跑**（`run.py` 顶部）：`_maybe_prompt_update()` · interactive `input("[y/s/n]")`
+   - 非 TTY（CI / Codex sandbox / 管道）自动跳过
+   - `UZI_NO_UPDATE_CHECK=1` env 禁用
+   - 网络异常 silent skip（不阻塞分析流程）
+
+2. **Agent 会话**（`hooks/session-start`）：后台检查 + 写 `.cache/_global/update_prompt.md`
+   - SKILL.md 新增 `HARD-GATE-UPDATE-PROMPT`：agent 第一次回应前必须读该文件 → 完整展示给用户 → 收集 y/s/n → 调 `handle_answer` 写回
+   - 处理完删除 prompt 文件，同会话不重复弹
+
+### 用户交互文案
+
+```
+📦 UZI-Skill 有新版本可更新：v2.13.7 → v2.14.0
+   https://github.com/wbh604/UZI-Skill/releases/tag/v2.14.0
+
+更新内容（前 600 字）：
+[从 release body 抓]
+
+选项：
+  [y] 是，我现在去更新
+  [s] 跳过本版（v2.14.0 之后有更新再提示）
+  [n] 否，下次启动再问
+```
+
+**更新命令分 agent 环境**：
+- Claude Code: `/plugin update stock-deep-analyzer`
+- git clone: `cd UZI-Skill && git pull`
+- Hermes: `hermes skills update wbh604/UZI-Skill/skills/deep-analysis`
+
+### 性能与可靠性
+
+- **GitHub API 缓存 6h** · 防 60 req/h 未认证限流 · cache 新鲜时直接读 `cached_latest` 判断，不打 API
+- **timeout 5s** · GFW / 慢网络快速 fail · silent skip 不阻塞主流程
+- **semver 匹配**：仅对正式 tag `v2.x.y` 比较 · pre-release / dev branch 不弹
+- **env 禁用**：`UZI_NO_UPDATE_CHECK=1` 跳过全部检查（CI / Codex 推荐设）
+
+### 测试
+
+新增 `tests/test_v2_14_0_update_check.py` · 13 个回归：
+- `_parse_semver` 基础 + 边界
+- `_newer` 比较
+- env 禁用
+- 同版本不弹 / 新版本弹
+- skip 同版不再弹 / skip 后新版再弹
+- 网络失败 silent skip
+- cache 生效不重复打 API
+- handle_answer y/s/n 三路径
+- `format_prompt` 含三选项
+
+**全量 230 passed**（baseline 217 + 13 新）。
+
+### 版本
+
+- `2.13.7 → 2.14.0`（minor bump · 新增用户可见功能）
+- 4 manifest 同步
+- Branch: `feature/v2.14.0-auto-update`
+- Tag: `v2.14.0`
+
+---
+
+## v2.13.7 — 2026-04-19 (wire new sources · 把 registry 登记的源真正接入 fetcher)
+
+> **背景**：v2.13.4 / v2.13.6 共加了 16 个新源到 `data_source_registry.py`，但只是 registry 层面的登记，实际 fetcher 并没用它们。v2.13.7 把这些源真正接入到对应 fetcher 里，让数据流通。
+
+### 核心改动
+
+| 模块 | 新接入源 | 说明 |
+|---|---|---|
+| `fetch_events.py` (15_events) | `news_providers` (jin10/em_kuaixun/em_stock_ann/ths) | 4 源统一聚合 · 补 cninfo + ak 盲区 |
+| `fetch_sentiment.py` (17_sentiment) | `news_providers` | 情绪增强 · 新闻正负词融合 heat 分数 |
+| `fetch_policy.py` (13_policy) | `_fetch_cfachina_titles` | 期货/商品 industry 专用 · 期货协会权威源 |
+| `lib/data_sources.py::_kline_us_chain` | `_yahoo_v8_chart` HTTP | 绕开 yfinance cookie/crumb 机制 · 直连 Chart v8 |
+| `lib/data_sources.py::_kline_hk_chain` | `_yahoo_v8_chart` HTTP | 港股第 4 层兜底 · 前 3 层（东财/新浪/yf）全败时用 |
+
+### 新增 `lib/news_providers.py`（160 行）
+
+统一聚合 4 个财经新闻源：
+- `fetch_jin10()` - 解析 `var newest = [...]` JS 变量（跳 JSONP 包装）
+- `fetch_em_kuaixun()` - 解析 `var ajaxResult={LivesList:[...]}` · 兼容无尾 `;` 响应
+- `fetch_em_stock_ann(stock_code)` - JSON API · 支持按 code 过滤公告
+- `fetch_ths_news_today()` - HTML regex · `<a class="title">` 提取
+
+**关键 API**：`get_news_multi_source(stock_code, stock_name, limit_per_source)` → `{sources: {...}, total_hits, sources_ok}` · 10 min 文件缓存在 `.cache/_global/news/`.
+
+### 新增 `_yahoo_v8_chart(symbol, range_)`
+
+直连 `query1.finance.yahoo.com/v8/finance/chart/{sym}?interval=1d&range={range}` · 429 自动 retry 一次 · 返归一到东财中文列（日期/开盘/收盘/最高/最低/成交量）· 兼容 AAPL / 0700.HK / 9988.HK.
+
+### 实测
+
+```bash
+python3 lib/news_providers.py "" ""
+# sources_ok: 4/4 · total_hits: 31
+
+python3 -c "from lib.data_sources import _yahoo_v8_chart; print(len(_yahoo_v8_chart('AAPL','1mo')))"
+# 22
+python3 -c "from lib.data_sources import _yahoo_v8_chart; print(len(_yahoo_v8_chart('0700.HK','1mo')))"
+# 21
+```
+
+### 测试
+
+新增 `tests/test_v2_13_7_wire_new_sources.py` · 12 个回归：
+- `news_providers` 模块存在性 + NewsItem dataclass
+- `fetch_jin10` / `fetch_em_kuaixun` 正则解析（mocked HTTP）
+- `fetch_events` / `fetch_sentiment` 接入 `get_news_multi_source` 调用路径
+- `_yahoo_v8_chart` 解析 response + 429 retry 逻辑
+- `_kline_us_chain` yf/ak 全失败时兜底到 v8
+- `fetch_policy` 期货 industry 调 cfachina · 非期货不调
+
+**全量 217 passed**（baseline 205 + 12 新）。
+
+### 影响面
+
+- **A 股 15_events 数据密度提升**：之前仅 cninfo + ak.stock_news_em，过滤"资金流向"等噪音后常 < 3 条；加入 4 源聚合后 10-30 条可用新闻。
+- **17_sentiment heat 更准**：new_hit * 2 分 + 新闻正负词二次融合。
+- **美股/港股 K 线稳定性**：yfinance 2026 年多次因 cookie 机制失败；Yahoo v8 HTTP 直连是可靠兜底。
+- **期货/商品类 13_policy 更权威**：cfachina 首页标题抽取（行业论坛/峰会/研讨会）· 仅对"期货/衍生品/商品/金融/证券"industry 触发，不影响其他。
+
+### 版本
+
+- `2.13.6 → 2.13.7`
+- 4 manifest 同步（`.claude-plugin/plugin.json` / `.cursor-plugin/plugin.json` / `package.json` / `.version-bump.json`）
+- Branch: `feature/v2.13.7-wire-new-sources`
+- Tag: `v2.13.7`
+
+---
+
+## v2.13.6 — 2026-04-19 (新增 6 个经 curl 验证的期货 + 财经新闻源)
+
+> **用户提供第二波 Grok 清单**（期货 + 财经新闻 · 10+ 端点）· 批量 curl 真实验证 · 6 有效新源登记
+
+### 新增 6 源（SOURCES 64 → 70）
+
+**新闻类（财联社替代方案）：**
+
+1. **金十数据 `jin10.com/flash_newest.js`** ⭐
+   - 实时快讯 JSON · 38KB · 含国内外宏观/政策/突发/行情
+   - 覆盖 A/H/U 三市场 · 标 `15_events` + `17_sentiment` + `3_macro` + `13_policy`
+   - akshare 也有封装 `ak.js_news()` · 双重接入
+   - **这是"类财联社"的最佳零 Key 替代**
+
+2. **东财快讯 `newsapi.eastmoney.com/kuaixun/v1/`**
+   - 62KB 实时快讯 JSON · 类财联社风格
+   - 覆盖 `15_events` + `17_sentiment`
+
+3. **东财上市公司公告 `np-anotice-stock.eastmoney.com/api/security/ann`**
+   - JSON 公告流 · 支持 `page_size` + `ann_type` 过滤
+   - 替代 cninfo 做高频轮询
+   - 覆盖 `15_events`（A 股）
+
+4. **同花顺今日快讯 `news.10jqka.com.cn/today_list/`**
+   - 68KB HTML · 财经/行情/行业快讯聚合
+   - 覆盖 A/H · `15_events` + `17_sentiment`
+
+**期货类：**
+
+5. **99 期货网 `www.99qh.com`**
+   - 中国最全期货库存/仓单/现货价/基差数据
+   - 覆盖 `8_materials` + `9_futures`
+   - HTML 解析（141KB）
+
+6. **中期协 `www.cfachina.org`**
+   - 官方协会公告/法规 · 权威政策源
+   - 覆盖 `9_futures` + `13_policy`
+
+### 验证无效不入库的 7 源
+
+| 源 | HTTP | 原因 |
+|---|---|---|
+| 新浪期货 `hq.sinajs.cn/list=CFF_RE_IF0` | 403 | 国内反爬 |
+| 金十 flash-api `flash-api.jin10.com` | 502 | 端点挂（但 flash_newest.js 在） |
+| 新浪 RSS china / finance roll | 404 | URL 已撤 |
+| 央视 RSS `news.cntv.cn/rss/rss.jsp` | 404 | RSS 不再维护 |
+| 网易 RSS `rss.163.com` | 0 | 连接不通 |
+| 雪球 batch quote API | 400 | 需 cookie/登录 |
+| 财联社官方 REST | — | Grok 自己说明没有公开 API |
+
+### akshare 封装（已通过 akshare tier 覆盖 · 本版不重复登记）
+
+- `ak.js_news()` · 金十数据
+- `ak.futures_news_baidu()` · 百度期货新闻
+- `ak.get_cffex_daily()` / `get_dce_daily()` / `get_czce_daily()` · 四大交易所
+- `ak.futures_zh_spot()` / `futures_zh_daily_sina()` · 期货行情
+
+### 回归测试
+
+- 新增 `tests/test_v2_13_6_news_futures.py` · 10 用例
+- 覆盖：6 新源 ID / 维度标注 / market 覆盖 / 无重复 / `http_sources_for('15_events', 'A')` 包含新源
+- 全量 **205 passed**（v2.13.5 195 + 新 10）
+
+### 升级
+
+`git pull origin main` · registry 立即生效 · 6 新源已登记可被 `http_sources_for` 查到 · fetcher 接入下版本按需做
+
+### 展望 · 真正的财联社替代栈
+
+推荐优先使用组合：
+- **实时快讯**：`ak.js_news()`（金十 akshare 封装）或直连 `jin10.com/flash_newest.js`
+- **公司公告**：`np-anotice-stock.eastmoney.com/api/security/ann`（东财 JSON）或 cninfo
+- **财经聚合**：`news.10jqka.com.cn/today_list/`（同花顺 HTML）
+
+---
+
+## v2.13.5 — 2026-04-19 (NetworkProfile 自适应 + agent HARD-GATE 主动触发 Playwright)
+
+> **用户反馈**："我使用下来，并没有遇到模型主动使用 Playwright 的问题" · 诊断发现 agent role-play 阶段根本没教过要调 Playwright · 脚本自动跑 OK 但 agent 不补漏
+
+### 三层解决
+
+**Layer 1 · `NetworkProfile` 升级**（`lib/network_preflight.py`）
+
+从 v2.10.2 的 "5 个国内 TCP connect" 升级到：
+- **9 个目标 3 组**：国内（push2/cninfo/xueqiu）+ 境外（yahoo/coingecko/baike）+ 搜索（ddgs/baidu/github）
+- **代理检测**：扫 HTTP_PROXY/HTTPS_PROXY/ALL_PROXY 大小写 6 个 env
+- **结构化输出**：`NetworkProfile(domestic_ok, overseas_ok, search_ok, has_proxy, recommendation, severity)`
+- **缓存到 `.cache/_global/network_profile.json`** · 5min TTL · agent 介入时直接读
+
+诊断输出：
+```
+🌐 网络预检 (9/9 通 · 均延迟 4ms · proxy=no)
+  [国内 3/3] ✓ push2.eastmoney.com · cninfo · 雪球
+  [境外 3/3] ✓ query1.finance.yahoo.com · api.coingecko.com · baike.baidu.com
+  [搜索 3/3] ✓ duckduckgo.com · www.baidu.com · api.github.com
+  ✓ 全网通畅 · Playwright 可抓境内+境外所有源
+```
+
+**Layer 2 · Agent HARD-GATE-PLAYWRIGHT-AUTOFILL**（`SKILL.md` / `AGENTS.md` / `commands/analyze-stock.md`）
+
+明确要求 agent 在 stage1 → stage2 **之间**：
+
+```python
+# 1. 读网络 profile
+net = json.loads(Path(".cache/_global/network_profile.json").read_text())
+print(net["recommendation"])  # 人读的建议
+
+# 2. 读自查 issues 找低质量维度
+issues = json.loads(Path(f".cache/{ticker}/_review_issues.json").read_text())
+low_q = [i["dim"] for i in issues["issues"]
+         if i.get("category")=="data" and i.get("severity") in ("critical","warning")]
+
+# 3. 主动强制跑 Playwright 兜底
+if low_q:
+    os.environ["UZI_PLAYWRIGHT_FORCE"] = "1"
+    from lib.playwright_fallback import autofill_via_playwright
+    autofill_via_playwright(raw, ticker)
+```
+
+**绝对禁止**：看到 `data.growth = "—"` 直接在 commentary 里写"增速待补充"——应该先让 Playwright 抓一次。
+
+**Layer 3 · `DIM_STRATEGIES` 按 NetworkProfile 自适应**（`lib/playwright_fallback.py`）
+
+每个维度声明所需网络能力：
+```python
+DIM_NETWORK_REQUIREMENTS = {
+    "4_peers":       ("domestic",),              # 雪球
+    "7_industry":    ("domestic", "search"),     # 百度搜索
+    "18_trap":       ("domestic", "search"),     # 小红书搜索
+    "14_moat":       ("domestic",),              # 百度百科
+    # ... 10 个维度都声明
+}
+```
+
+运行时按 profile 过滤：
+- `search_ok=False` → 7_industry / 18_trap 直接跳（跳前打印原因）
+- `domestic_ok=False` → 10 维全跳
+- 日志明确："🌐 网络过滤 · 跳过 2 维: 7_industry(search 不通), 18_trap(search 不通)"
+
+### 回归测试
+
+- 新增 `tests/test_v2_13_5_preflight_adaptive.py` · **14 个用例**
+- NetworkProfile：proxy env / recommendation 变化 / cache 读写 / stale 重测
+- DIM_STRATEGIES 自适应：domestic 不通全跳 / search 不通部分跳 / 全通全保留
+- HARD-GATE 文档：SKILL.md / AGENTS.md / commands 都含 `autofill_via_playwright` 字面量
+- 全量 **195 passed**（v2.13.4 181 + 新 14）
+
+### 用户影响
+
+从此 agent 遇到空数据会**主动**开浏览器补：
+- v2.13.2 autofill_via_playwright 只在 stage1 末尾跑一次 · 漏补的维度 agent 没补
+- v2.13.5 agent role-play 前 **强制再跑一次 FORCE 模式** · 覆盖 stage1 漏的
+
+配合 v2.13.2 `UZI_PLAYWRIGHT_FORCE=1` + v2.13.1 全 10 维覆盖 + v2.13.0 三档分级 · 形成完整 Playwright 层。
+
+### 升级
+
+`git pull origin main` · 下次 agent 读 SKILL.md 自动按新 HARD-GATE 执行
+
+---
+
+## v2.13.4 — 2026-04-19 (新增 10 个经 curl 验证的无 Key 公开数据源)
+
+> **用户提供 Grok 清单 20+ 个 "全网最全" 无需 Key 的行情接口** · 批量 curl 真实验证 · 过滤无效项 · 9 有效加密源 + 1 Yahoo Chart v8 + 1 腾讯港股 quote 注册入库
+
+### 验证方法
+
+所有端点经 `curl -w "%{http_code}"` 真实 HTTP 请求 · 国内网络环境 · 8s 超时 · 记录 response size + 前 120 字节样本
+
+### 新增 10 源（`data_source_registry.py` SOURCES 54→64）
+
+**Yahoo Chart v8**（US+HK · K线）· v7 quote 已被 Yahoo 关闭（401）· v8 仍公开可用
+
+**腾讯港股 quote**（HK · basic）· `qt.gtimg.cn/q=hk00700` · 国内外都通
+
+**加密源 8 个**（U · 3_macro 维度 · 作全球流动性 / 资金流参考）：
+1. CoinGecko Simple Price · `api.coingecko.com/api/v3/simple/price`
+2. CoinGecko Markets · `api.coingecko.com/api/v3/coins/markets`
+3. OKX 现货 tickers · `okx.com/api/v5/market/tickers?instType=SPOT`（国内访问不受限）
+4. KuCoin 24h stats
+5. Kraken 公开成交
+6. Gemini 行情
+7. CoinLore 全量币种（36KB JSON 快照）
+8. GeckoTerminal DEX networks
+
+### 验证为无效不入库的 5 源
+
+| 源 | 原因 |
+|---|---|
+| Sina `hq.sinajs.cn/list=` | 403 Forbidden 国内反爬 |
+| Netease `quotes.money.163.com/service/chddata.html` | 502 Bad Gateway |
+| Yahoo v7 `v7/finance/quote` | 401 Unauthorized · Yahoo 已关闭公开访问 |
+| Binance spot/24hr/futures | 451 Restricted Location · 国内 IP 封 |
+| CoinCap / CoinDesk v1 | 连接失败 |
+
+### 使用场景
+
+- `data_sources.fetch_kline` 美股/港股 fallback 链加 yahoo_chart_v8
+- `fetch_macro` 加 Crypto 作流动性指标（BTC 跌破某关键价 · A 股风险偏好下行信号）
+- 港股基本面加腾讯 quote 作无反爬第 N 层备源
+
+### 回归测试
+
+- 新增 `tests/test_v2_13_4_new_sources.py` · 8 个用例
+- 验证 10 个新源按 ID 可查 / 加密源全标 3_macro / yahoo_v8 覆盖 U+H 2_kline / 无重复 ID / http_sources_for 查询正确
+- 全量 **181 passed**（v2.13.3 173 + 新 8）
+
+### 升级
+
+`git pull origin main` · registry 立即生效 · 后续 fetcher 扩展可复用（v2.13.4 仅登记 · 未自动接入各 fetcher · 下版本按需接入）
+
+---
+
+## v2.13.3 — 2026-04-19 (51 评委规则全员历史立场还原)
+
+> **用户反馈**："林奇是不是有点激进？他历史上的持仓和操作，麻烦你核对一下" · 中际旭创 300308.SZ 实测发现 **19 人给 100 分** 严重不合理，多位评委立场与历史不符
+
+### 根因诊断
+
+从 300308 面板扫描 v2.13.2 分数分布：
+- 19 人给 100 分（含 13 位游资 + 林奇 + 索罗斯 + 段永平 + 张坤 + 邓晓峰）
+- 木头姐 13 分看空（CPO 本是她核心赛道，被判 0% 行业增速）
+- F 组游资"市值 9456 亿 > 150 亿 = 看多 100" / "超 80 亿 = 看空"（反向 bug）
+
+### 5 处规则修复
+
+**Fix 1 · F 组游资射程**
+- `seat_db.is_in_range` 加隐式 500 亿大市值上限（章盟主 allowlist 除外，历史做过茅台大盘）
+- `investor_evaluator._is_youzi_out_of_range` 前置检查 · 超射程直接 skip 不打分
+- `_youzi_base_rules` 移除 min_mcap/max_mcap 作为 Rule（避免"市值超标"反向打分）
+- **300308 效果**：F 组 22/23 人正确 skip（原 13 人错打高分）
+
+**Fix 2 · 索罗斯反身性方向**
+- 原 bug：`abs(upside_to_target) > 10` · 目标价 -63% 也被判"反身性差 = 看多 100"
+- 修：拆两条规则
+  - `sentiment_long_reflex` · 只在 upside > +10% 时 pass（做多反身性）
+  - `sentiment_short_reflex_penalty` · upside < -15% 扣分（识别市场狂热）
+- **300308 效果**：索罗斯 100 → 42 neutral · "无做多反身性空间"
+
+**Fix 3 · 林奇 PEG 严格化 + PE 40 红线**
+- 依据 *One Up on Wall Street (1989)* / *Beating the Street (1993)*：
+  - PEG ≤ 1 理想（Taco Bell 0.6 / Hanes 0.2 / Fannie Mae 0.6 均低于 1）
+  - PE > 40 "like buying a Rolls Royce" · 林奇警戒线
+  - Fast grower sweet spot 20-50%
+- 原版单条 `peg_reasonable PEG < 1.5` 过松 · 拆 6 条：
+  - `peg_ideal` PEG < 1（5 分）
+  - `peg_acceptable` PEG 1-1.5（3 分）
+  - `pe_not_rolls_royce` PE < 40（3 分）← 新增
+  - `fast_grower_zone` 20-50%（3 分）
+  - `understandable` + `research_support`（2+2 分）
+- **300308 效果**：林奇 100 → 38 neutral · "PE 63 · Rolls Royce 不是必要品"
+
+**Fix 4 · 木头姐颠覆性判定**
+- 两处 bug：
+  - 字段名错：读 `industry_growth_pct` · 实际 stock_features 设的是 `industry_growth` · 中际旭创读成 0 判"增长太慢"
+  - 白名单缺 CPO/光模块/算力/数据中心/HBM · AI 基建本是 ARK 核心赛道
+- 修：字段兼容读 · 白名单加 AI 算力相关 12 个关键词
+- **300308 效果**：木头姐 13 bearish → 80 bullish · "行业增速 40% — S 曲线拐点"
+
+**Fix 5 · 中国价投派 PE 红线**
+- 段永平：历史买苹果 PE 18 / 茅台 PE 30 / 腾讯 PE 25 · 对 PE 50+ 永远"贵了"
+- 张坤：重仓茅台/五粮液/腾讯 PE 15-35 区间
+- 邓晓峰：偏左侧风格 · 白酒/地产/银行/周期股 PE 都偏低
+- 各加 1 条 PE 红线规则（段 PE<40 · 张 PE<40 · 邓 PE<35）
+- **300308 效果**：段永平 100→84 · 张坤 100→78 · 邓晓峰 100→76（仍看多但不再狂热）
+
+### 评分分布对照（300308.SZ）
+
+| 桶 | v2.13.2 | v2.13.3 |
+|---|---|---|
+| 100 分 | **19 人** | **5 人** |
+| 70-99 | 2 | 12 |
+| 40-69 | 7（neutral/bearish） | 7 |
+| < 40 | 9（含 4 游资 misjudged） | 4 |
+| skip | 1 | **23**（F 组 22 + 索普） |
+| consensus | 78 | **81.4**（分母 28，质量提升） |
+
+### 回归测试
+
+- 新增 `tests/test_v2_13_3_investor_rules.py` · **15 个用例**
+  - Fix 1 · 4 游资射程 scenarios
+  - Fix 2 · 索罗斯 3 方向（看多/看空/neutral）
+  - Fix 3 · 林奇 3 PEG 区间
+  - Fix 4 · 木头姐 CPO 识别 + 字段兼容
+  - Fix 5 · 段永平/张坤 PE 红线 + 护栏
+- 全量 **173 passed**（v2.13.2 158 + 新 15）
+
+### 升级
+
+`git pull origin main` · 老 cache 下次 stage1 自动用新规则重算 panel.json · 无需 --no-resume（v2.9 的 panel 不 cache · 每次都重算）
+
+---
+
+## v2.13.2 — 2026-04-19 (Playwright 触发逻辑升级 · 数据质量感知 + FORCE flag)
+
+> **用户反馈**："有很多网站爬不到内容，也没有拉起 Playwright" · 诊断发现三个根因：(1) v2.13.1 之前 cache 没 Playwright 字段 (2) `_dim_needs_fallback` 只看 `len(data)` 不看值质量 (3) skip 时无日志告诉用户为什么
+
+### 根因诊断（中际旭创 cache 实测）
+
+| 维度 | data 字段数 | 其中有效 | 质量 | v2.13.1 判定 | v2.13.2 判定 |
+|---|---|---|---|---|---|
+| 7_industry | 12 | 3 (`industry`/`lifecycle`/`cninfo_metrics`) | 25% | "不需要兜底" ❌ | "需要兜底" ✅ |
+| 4_peers (self-only) | 7 | 5 但 fallback=True | — | 不触发 ❌ | 触发 ✅ |
+| 8_materials | 8 | 全是 "—"/空 | ~0% | "不需要兜底" ❌ | "需要兜底" ✅ |
+
+### v2.13.2 核心改进
+
+**1. `_dim_needs_fallback` 数据质量感知**
+
+新加 `_dim_quality_score(data)` 计算有效字段占比：
+- 排除 `_` 前缀的诊断字段（如 `_autofill` / `_debug`）
+- 统计非空值：非 `None` / 非 `"—"/"N/A"/""` / 非空 list/dict
+- 阈值 `QUALITY_THRESHOLD = 0.5` · 低于 50% 触发兜底
+
+触发条件扩展：
+- data 为空 → 触发（原版）
+- **`dim.fallback=True` → 总是触发**（新增 · 不再看 `len(data)<4`）
+- **quality < 50% → 触发**（核心改进）
+
+**2. `UZI_PLAYWRIGHT_FORCE=1` · kill switch**
+
+用户发现自动判定太保守时可强制重抓：
+```bash
+UZI_PLAYWRIGHT_FORCE=1 python3 run.py 300308.SZ --depth deep --no-resume
+```
+忽略 `_dim_needs_fallback` · 对所有 `profile.playwright_dims` 维度强制跑。
+
+**3. 清晰的 skip/run 日志**
+
+```
+🎭 profile=deep · playwright_dims=10 · FORCE=False
+⏭  4_peers         skip · 有效字段占比 71% 已达标
+✓  7_industry      via playwright · 字段: baidu_search_titles, baidu_search_descs
+✗  18_trap         页面抓取失败或解析无数据
+📊 Playwright 兜底 · 尝试 5 · 成功 3 · 失败 1 · 跳过 1（数据已足）
+```
+
+禁用时也明确说明：
+```
+ℹ️  Playwright skip · profile=medium · opt-in 未启用 · export UZI_PLAYWRIGHT_ENABLE=1 启用后重跑
+```
+
+### 回归测试
+
+- 新增 5 个用例：
+  - `test_dim_quality_score_detects_mostly_empty` · 12 keys 中 9 个 "—" → quality 25% → 触发
+  - `test_dim_quality_score_skips_ignoring_underscore_keys` · `_` 前缀不计 quality
+  - `test_autofill_triggers_on_low_quality_data` · 5 个全 "—" 的 key 应触发 Playwright
+  - `test_force_flag_ignores_quality_check` · FORCE=1 忽略 quality
+  - `test_autofill_summary_has_disabled_reason_when_off` · lite / medium 未 opt-in 都有明确 `disabled_reason`
+- 全量 **158 passed**（v2.13.1 153 + 新 5）
+
+### 升级
+
+`git pull origin main` · 老 cache 不会自动重跑 · `--no-resume` 能立即看到 Playwright 触发。
+
+**强制兜底（解决"爬不到也没拉起 Playwright"）**：
+```bash
+export UZI_PLAYWRIGHT_FORCE=1
+python3 run.py 300308.SZ --depth deep --no-browser --no-resume
+```
+
+---
+
+## v2.13.1 — 2026-04-18 (Playwright 全 10 维覆盖 · 开源研究场景扩展)
+
+> **用户明确本项目是开源研究场景，反爬/合规不受限制**。v2.13.0 Codex review 为保守起见排除了 5 维，本版全部加回。
+
+### 策略调整
+
+| 维度 | v2.13.0 状态 | v2.13.1 状态 | 目标页 |
+|---|---|---|---|
+| 4_peers | ✅ medium+deep | ✅ medium+deep (不变) | 雪球 `/S/{sym}` |
+| 8_materials | ✅ medium+deep | ✅ medium+deep (不变) | 东财 F10 |
+| 15_events | ✅ medium+deep | ✅ medium+deep (不变) | cninfo 公告 |
+| 17_sentiment | ✅ medium+deep | ✅ medium+deep (不变) | 雪球讨论区 |
+| 3_macro | ✅ deep-only | ✅ deep-only (不变) | stats.gov.cn |
+| **7_industry** | ❌ 排除 | ✅ **medium+deep** | 百度搜索 `{行业}+景气度` |
+| **14_moat** | ❌ 排除 | ✅ **medium+deep** | 百度百科公司词条 |
+| **13_policy** | ❌ 排除 | ✅ **deep** | 证监会 csrc.gov.cn |
+| **18_trap** | ❌ 排除 | ✅ **deep** | 小红书搜索 `{name}+老师+推荐` |
+| **19_contests** | ❌ 排除 | ✅ **deep** | 雪球实盘组合排行榜 |
+
+### 三档维度扩展
+
+| profile | v2.13.0 | v2.13.1 |
+|---|---|---|
+| ⚡ lite | 0 维 off | 0 维 off (不变) |
+| 📊 medium | 4 维 opt-in | **6 维** opt-in（加 7_industry + 14_moat） |
+| 🔬 deep | 5 维 default | **10 维** default（全覆盖）|
+
+### 新增 5 个 parser（`lib/playwright_fallback.py`）
+
+- `_strategy_7_industry` · 百度搜索 `{行业} 行业景气度 增速 市场规模` · 抓 `<h3>` 标题 + `.content-right` 描述
+- `_strategy_14_moat` · 百度百科 `/item/{公司名}` · 抓 `.lemma-summary` 简介 + `.basicInfo-item` 信息栏
+- `_strategy_13_policy` · 证监会 `csrc.gov.cn/common_list.shtml` · 抓政策动态标题列表
+- `_strategy_18_trap` · 小红书 `xiaohongshu.com/search_result` · 搜 `{name} 老师 推荐` · 命中数作杀猪盘信号
+- `_strategy_19_contests` · 雪球 `xueqiu.com/cube/rank/list` · 抓组合排行 JSON · 提取 name + total_gain
+
+### 回归测试
+
+- 更新 `tests/test_v2_13_playwright_strategy.py` · 22 个用例
+- `test_dim_strategies_has_5_entries` → `test_dim_strategies_has_10_entries`
+- 移除 `test_excluded_dims_not_in_strategies`（不再排除）
+- 新增 `test_all_parsers_callable_and_return_none_on_empty_html` · 10 个 parser 都验证 fetch_url 返 None 时 graceful 返 None
+- 新增 `test_medium_dims_subset_of_deep` · 护栏：medium 必须是 deep 的子集
+- 全量 **153 passed**（v2.13.0 152 + 新 1）
+
+### BUGS-LOG 契约修订
+
+v2.13.0 BUGS-LOG 里关于"不能不经 Codex review 就加回排除维度"的契约作废 · 本版明确用户场景是开源研究不受合规限制 · 直接加回。
+
+---
+
+## v2.13.0 — 2026-04-18 (Playwright 通用兜底 · 按三档 profile 分级)
+
+> **用户要求"所有爬不到数据的都用 Playwright + 自动装"。经 Codex 架构 review 后按现有三档深度分级制定策略 · 避免对轻量用户添加不必要开销**
+
+### 核心设计
+
+**按 AnalysisProfile 分级**（扩展 `playwright_mode` + `playwright_dims` 两个字段）：
+
+| profile | Playwright 模式 | 覆盖维度 | 自动装 Chromium |
+|---|---|---|---|
+| ⚡ **lite** (30s-1min) | `off` 完全禁用 | 无 | 不涉及 |
+| 📊 **medium** (2-4min) | `opt-in` · `UZI_PLAYWRIGHT_ENABLE=1` 启用 | **4 维**：`4_peers` / `8_materials` / `15_events` / `17_sentiment` | ❌ 打印命令让用户手动装 |
+| 🔬 **deep** (15-20min) | `default` 默认启用 | **5 维**：medium 4 维 + `3_macro` | ✅ 首次 y/n 交互确认后自动装 |
+
+### 新增模块
+
+**`lib/playwright_fallback.py`** (~320 行)：
+- `is_playwright_enabled()` · 按 profile 判断
+- `ensure_playwright_installed(auto)` · 分档装 · y/n 交互 · pypi 国内镜像 fallback
+- `fetch_url(url, wait_for, timeout)` · 通用 headless Chromium 抓取 · 随机 0.5-1.5s sleep 反风控
+- `DIM_STRATEGIES` · 5 维策略映射 (URL 模板 + parser)
+- `autofill_via_playwright(raw, ticker)` · post-fetch 兜底 · 类 `_autofill_qualitative_via_mx` 模式
+
+**`lib/junk_filter.py`** · 抽离 v2.12.1 `_is_junk_autofill` 共用（Playwright 抓回来的数据也走垃圾过滤）
+
+### Codex 架构 review 排除的维度
+
+经 Codex review 明确不加：
+- ❌ `7_industry` → 百度搜索页信噪比差（保持 `search_trusted` site: 权威域方案）
+- ❌ `14_moat` → 百度百科质量差
+- ❌ `13_policy` → `search_trusted` site: 限权威域已够
+- ❌ `18_trap` → 小红书/抖音反爬严 + UGC 合规风险
+- ❌ `19_contests` → `lib/xueqiu_browser` 已有专用登录路径
+
+这些放在 BUGS-LOG 的"未来改该区域注意事项"里作为契约：**不能不经 Codex review 就加回来**。
+
+### 自动装策略（deep 档）
+
+```
+deep 模式触发 → 检测 playwright + chromium
+  ├─ 已装 → 直接跑兜底
+  ├─ 未装 → 打印 "需要下载 ~180 MB，继续？(y/N)"
+  │    ├─ 用户 y → pip install (国内镜像 fallback) + playwright install chromium
+  │    │    ├─ 成功 → 继续
+  │    │    └─ 失败 → warning · 跳过 Playwright · 主流程不阻塞
+  │    └─ 用户 n/空 → 跳过 Playwright · 其他兜底仍跑
+  └─ 任何 exception → warning · 跳过
+```
+
+### 反爬 / 合规原则
+
+- 只抓官方权威页：`xueqiu.com/S/{sym}` public / `cninfo.com.cn` / `em.eastmoney.com` F10 / `stats.gov.cn`
+- 每次请求随机 `0.5-1.5s` sleep
+- **不抓 UGC 平台**（小红书/抖音/微博）· 这些放 17_sentiment 的 ddgs 链
+
+### 回归测试
+
+- 新增 `tests/test_v2_13_playwright_strategy.py` · **21 个用例**（全 mock · 零真实浏览器）
+  - 3 档 profile 字段 · `is_enabled` 三场景 · `ensure_installed` 5 路径（已装 / 未装 opt-in / 未装 deep y / 未装 deep n / chromium fail）
+  - `autofill` 白名单 / 垃圾过滤 / 已有数据跳过
+  - `DIM_STRATEGIES` 5 维 · 排除维度护栏 · `junk_filter` 模块 · BC delegate
+- 全量 **152 passed**（原 131 + 新 21）
+
+### 兼容性
+
+- v2.12.1 的 `_is_junk_autofill` 保留（delegate 到 `lib/junk_filter.is_junk_autofill_text`）· 老代码 import 不破
+- v2.12.1 的 `lib/xueqiu_browser.fetch_peers_via_browser` 保留 · 作为**登录态专用**路径（`UZI_XQ_LOGIN=1`）· 与新的通用 `fetch_url` 分工：
+  - 登录态 → xueqiu_browser（cookie 持久化 + F10 页深度抓）
+  - 匿名 → playwright_fallback.fetch_url（轻量 · 速度快）
+
+### 升级
+
+`git pull origin main` · 默认对 lite/medium 用户**零感知**（不装不跑）· deep 用户首次触发会看到 y/n 提示。
+
+---
+
+## v2.12.1 — 2026-04-18 (4 个报告板块空数据 / 错数据修复)
+
+> **用户实测中际旭创（300308.SZ）发现 4 处 数据层 / 模型层 bug · 一次性 hotfix**
+
+### 用户反馈
+
+- 同行对比板块完全空（"peer_table: []"）
+- 行业景气 growth / TAM / 渗透率 永远 "—"
+- 原材料 core_material 显示 "类型；类型"（MX prompt 残留）
+- BCG 矩阵：**所有股票都归 Dog 瘦狗 · 考虑剥离**（中际旭创作为 CPO 全球龙头被归 Dog 明显错误）
+
+### 4 个 Bug 根因 + 修复
+
+**Bug 1 · `4_peers` 东财 push2 挂了无 fallback**（`fetch_peers.py`）
+- 原版：主链挂了 `peer_table/peer_comparison` 整表空
+- 修：三层 fallback 链 + 一层保底
+  - Tier 1 主链（不变）
+  - Tier 2 · 2.5s retry（网络抖动）
+  - Tier 3 · **雪球 Playwright 登录态**（用户 opt-in `UZI_XQ_LOGIN=1`）· 复用 `lib/xueqiu_browser.py` v2.7.1 基础设施 · 新加 `fetch_peers_via_browser(code)` 从 `xueqiu.com/S/{sym}` 正则抽同板块股票
+  - Tier 4 · 保底返公司自己一行 + `fallback: True` + `fallback_reason` 字段让 agent 识别降级
+
+**Bug 2 · `7_industry` growth/tam/penetration 永远 "—"**（`fetch_industry.py`）
+- 原版 3 个问题叠加：① growth regex 不带上下文，被 "PE 25%" 抢先匹配 ② penetration 完全没 regex ③ `all_bodies` 只拼 body 不含 title（关键数字常在 title 如 "净利齐涨超40%"）
+- 修：
+  - growth regex 上下文感知 · 关键词 `增长/增速/CAGR/涨超/涨幅/暴涨/翻倍/提升` + 0-20 字符 + %
+  - 加 TAM 上下文（市场规模/规模达/产业规模/TAM）
+  - 加 penetration_heuristic 渗透率 regex
+  - `main` line 228 · penetration 补 dynamic 兜底（原版遗漏）
+  - all_bodies 改为拼 title + body
+
+**Bug 3 · `core_material = "类型；类型"` MX 垃圾数据**（`run_real_test.py`）
+- 原版：`_autofill_qualitative_via_mx` 后处理阶段直接把 MX API 返回写入字段，无质量校验
+- 修：
+  - 加 `_is_junk_autofill(text)` 函数 · 检测 长度<5 / 黑名单短语 / 分号分隔全同
+  - `_AUTOFILL_JUNK_PATTERNS` 模块级常量便于扩展
+  - MX 和 ddgs 返回后分别过滤 · 垃圾 → `text = ""` 不写入
+  - 保留 `_autofill_failed` 让 agent 明确"数据不足"
+
+**Bug 4 · BCG 所有股归 Dog**（`lib/stock_features.py` + `lib/deep_analysis_methods.py`）
+- 原版：
+  - `stock_features.py:340-341` 硬编 `f["market_share"] = _f(industry.get("market_share"), default=10)` · 但 `industry.market_share` key 从未被任何 fetcher 写入 · 永远 default 10
+  - BCG 阈值 `share>15 AND growth>10` · 默认 10/10 不满足任何 >15 条件 → 必落 Dog
+- 修：
+  - `stock_features.py` 真实算 `market_share = 公司市值 / 行业总市值 × 100`（数据源 `basic.market_cap_yi` / `industry.cninfo_metrics.total_mcap_yi`）
+  - `industry_growth` 从 `industry.growth` 字符串 regex 解析百分比（Bug 2 修复后有真实值）
+  - BCG 阈值调整 · Star `share>3 AND growth>15` / Cash Cow `share>3 AND growth≤15` / Question Mark `share≤3 AND growth>15` / Dog `share≤3 AND growth≤15`（`share>15` 对 A 股单股非现实）
+  - `default=10` → `default=0`（数据缺失明确落 Dog 而不是假数据）
+
+### 回归测试
+
+- 新增 `tests/test_v2_12_1_data_fixes.py` · **16 个用例**（4 bugs × 多场景 + 护栏）
+- 更新 `test_no_regressions.py::test_hk_branches_isolated` HK 分支独立 try/except
+- 全量 **131 passed**（原 115 + 新 16）
+
+### 中际旭创端到端验证（`300308.SZ --depth medium --no-resume`）
+
+| 板块 | v2.12.0 | v2.12.1 |
+|---|---|---|
+| 4_peers peer_table | `[]` 空 | 1 行（公司自己）+ fallback_reason 说明降级 |
+| 7_industry.growth | `"—"` | **"40%/年"** |
+| 8_materials.core_material | `"类型；类型"` | 真实公司概况 ddgs 结果 |
+| BCG category | Dog 瘦狗 考虑剥离 | **Star (明星)** · market_share 5.5% · growth 40% |
+
+### 致谢
+
+本版用户反馈驱动 · 论坛 + 微信群实测。Bug 4 BCG 是全部历史版本都存在的模型 bug，中际旭创测试暴露出来后一并修复。
+
+### 升级
+
+`git pull origin main` · 老 cache 不会自动重跑 · 重新跑 `--no-resume` 能立即看到 4 个板块改观。
+
+---
+
+## v2.12.0 — 2026-04-18 (6 平台社交热榜聚合)
+
+> **参考 [run-bigpig/jcp](https://github.com/run-bigpig/jcp)（韭菜盘 AI · 851 ⭐）的 `internal/services/hottrend` 设计，补 DuckDuckGo web search 的盲区**
+
+### 背景
+
+v2.11 的 `17_sentiment` 维度主要靠 ddgs（DuckDuckGo + site: 限定），但：
+- 抖音/快手/小红书/B 站 retail investor 集中地在 ddgs 爬不到
+- 散户情绪和杀猪盘题材经常先在这些平台发酵
+
+jcp 已经开源了 6 平台热榜聚合，直接抄过来。
+
+### 新增
+
+**`skills/deep-analysis/scripts/lib/hottrend.py`** (~240 行)
+
+| 平台 | API | 返回 |
+|---|---|---|
+| 微博 | `weibo.com/ajax/side/hotSearch` | 50 条实时热搜 |
+| 知乎 | `zhihu.com/api/v3/feed/topstory/hot-list-web` | 50 条热榜 |
+| 百度 | `top.baidu.com/api/board?platform=wise&tab=realtime` | 实时榜单 |
+| 抖音 | `douyin.com/aweme/v1/web/hot/search/list/` | 搜索热点 |
+| 头条 | `toutiao.com/hot-event/hot-board/` | 热点事件 |
+| B 站 | `s.search.bilibili.com/main/hotword?limit=50` | 全站热搜 |
+
+**核心 API**：
+```python
+from lib.hottrend import get_hot_mentions
+result = get_hot_mentions("贵州茅台")
+# → {"total_hits": 3, "by_platform_count": {"weibo": 2, ...}, "mentions": {...}}
+```
+
+自动派生简称（"贵州茅台" 同时匹配 "贵州" 和 "茅台"），覆盖品牌简称。
+
+**特性**：
+- 5min 文件缓存（跟 jcp 一致 TTL）
+- 单平台失败不影响其他（每个 fetcher 独立 try/except）
+- `UZI_HTTP_TIMEOUT` 默认 20s 超时
+- 每平台用不同 UA（抄 jcp 反爬策略）
+
+### 接入
+
+**`fetch_sentiment.py`** · 17_sentiment 维度：
+- 末尾调用 `get_hot_mentions(name)`
+- 输出字段 `data.hot_trend_mentions` + `data.hot_trend_hit_count`
+- heat 分数融合：每个热榜命中 +5 分
+- 不改原 ddgs 逻辑（additive）
+
+synthesis → report 里 agent 可以直接引用："微博热搜 #3 '茅台 1499 回归' + 知乎热榜 #7 '茅台为什么跌' — 散户情绪发酵中"。
+
+### 回归测试
+
+- 新增 `tests/test_v2_12_hottrend.py` · **17 个用例**
+  - 6 个平台 parser 各一（mocked HTTP）
+  - 空响应 / 网络异常 handling
+  - 缓存 roundtrip + TTL 过期
+  - `get_hot_mentions` 命中匹配 / 平台失败降级 / 短关键词过滤
+  - 接口稳定性：SUPPORTED_PLATFORMS 固定 6 个
+- 全量 **115 passed**（原 98 + 新 17）
+- **零真实网络依赖**（所有 HTTP 都 mock 了）
+
+### 致谢
+
+本模块借鉴 [run-bigpig/jcp](https://github.com/run-bigpig/jcp) 的 `hottrend` 服务实现。`fetch_weibo` / `fetch_zhihu` 等函数的 API 端点和 User-Agent 策略直接参考其 Go 实现。
+
+### 升级
+
+`git pull origin main` · 无配置变更 · 首次触发 `17_sentiment` 时各平台并串 1 次，之后 5min 内秒回。
+
+---
+
+## v2.11.0 — 2026-04-18 (评分校准 · 用户反馈驱动)
+
+> **论坛 linux.do/t/1981105 + 微信群多位用户反馈"分数偏低"**：@崔越"没超过 65 分"、@W.D"茅台 47 分"、@睡袍布太少"只测到天孚通信超 65"。本版做评分曲线校准。
+
+### 根因
+
+诊断 `run_real_test.py::generate_panel` + `generate_synthesis` 两处公式：
+
+1. **verdict 阈值太严**：`>=85 值得重仓 / >=70 可以蹲 / >=55 观望 / >=40 谨慎 / <40 回避`
+   - 从未有股能 ≥85（"值得重仓"档位形同虚设）
+   - 白马茅台实测 overall=47 → "谨慎"（与白马定位严重不符）
+
+2. **consensus neutral 权重偏低**（v2.9.1 的 0.5 半权公式）：
+   - 51 评委里价值派 6 + 中国价投 6 + 游资 23 = 35 人对多数股偏保守
+   - 白马典型分布 5 bull / 20 neu / 15 bear / 11 skip → `(5+10)/40×100 = 37.5`
+   - neutral 真实语义是"不坑但不是心头好"，不该按 0.5（半空头）处理
+
+### 修复
+
+**1. `generate_panel` · consensus 公式校准**（`run_real_test.py:745`）
+```python
+# v2.9.1: consensus = (bullish + 0.5*neutral) / active × 100
+# v2.11:  consensus = (bullish + 0.6*neutral) / active × 100
+NEUTRAL_WEIGHT = 0.6
+consensus = (bullish + NEUTRAL_WEIGHT * neutral) / max(active_count, 1) * 100
+```
+诊断字段 `consensus_formula.version` 升级到 `v2.11`。
+
+**2. `generate_synthesis` · verdict 阈值下调 5 分**（`run_real_test.py:1165`）
+```
+>=80 值得重仓    (原 85)
+>=65 可以蹲一蹲  (原 70)  ← 用户心里的及格线
+>=50 观望优先    (原 55)
+>=35 谨慎        (原 40)
+<35  回避
+```
+
+**3. `stock_style.apply_style_weights` · neutral 权重对齐**（`lib/stock_style.py:256`）
+- 从 `w * 0.5` → `w * 0.6`（与 generate_panel 对齐，否则风格加权前后 consensus 不一致）
+
+### 预期效果
+
+| 股票典型 | v2.9.1 overall | v2.11 overall | verdict 变化 |
+|---|---|---|---|
+| 白马茅台 (12/20/16/3) | 55.5 | 57.2 | 观望优先 → 观望优先（接近 65 边界） |
+| 真强股 (30/15/3/3) | 72 | 74 | 可以蹲 → **可以蹲** (更稳) |
+| 平庸股 (8/20/18/5) | 44 | 46 | 谨慎 → 观望优先 |
+| 真坑股 (3/10/33/5) | 28 | 30 | 回避 → **回避**（真坑照样识别） |
+
+**重点**：真坑股分数没有被抬高，辨识度反而提升。
+
+### 回归测试
+
+- 新增 `tests/test_v2_11_scoring_calibration.py` · 8 个用例
+  - 阈值硬检查 / ladder 单调 / 茅台典型分布 / NEUTRAL_WEIGHT 常量 / 两处对齐 / 诊断字段 / 0-100 sanity / 边界
+- 更新 `test_no_regressions.py::test_consensus_neutral_weighted_formula` 兼容 0.5/0.6 两种权重
+- 全量 **98 passed**（原 90 + 新 8）
+
+### BUGS-LOG
+
+完整登记在 [docs/BUGS-LOG.md v2.11.0 章节](docs/BUGS-LOG.md#v2110-2026-04-18--评分校准--用户反馈驱动)，含"未来改该区域注意事项"防回归清单。
+
+### README 更新
+
+- 版本号 v2.9 → v2.11
+- 更新日志补齐 v2.10.0-7（4 档）
+- 新增 "🎯 评分校准（v2.11）" 章节
+- Hermes 兼容提示（链到 INSTALL-HERMES.md）
+
+### 升级
+
+`git pull origin main` · 无数据迁移 · 已有 `.cache/` 继续生效。
+>>>>>>> main
 
 ---
 
