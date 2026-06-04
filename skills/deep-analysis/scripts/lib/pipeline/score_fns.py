@@ -459,6 +459,8 @@ def generate_panel(dims_scored: dict, raw: dict) -> dict:
         "E": {"label": "中式价投",   "desc": "段永平 / 张坤 / 朱少醒 / 冯柳 一脉"},
         "F": {"label": "A 股游资",   "desc": "龙虎榜顶流 23 位·章盟主/孙哥/赵老哥为代表"},
         "G": {"label": "量化派",     "desc": "Simons / Thorp / Shaw 一脉"},
+        "H": {"label": "科技领袖派", "desc": "黄仁勋 / 马斯克 / Altman / Saylor 一脉"},
+        "I": {"label": "AI 卡位/瓶颈猎手", "desc": "Serenity · AI 供应链卡脖子/瓶颈点"},
     }
 
     def _consensus_to_verdict(c: float) -> str:

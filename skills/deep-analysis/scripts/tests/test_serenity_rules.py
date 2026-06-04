@@ -108,6 +108,21 @@ def test_neutral_on_ai_chain_but_weak_chokepoint():
     assert r["signal"] == "neutral"
 
 
+def test_ar_optics_detected_in_ai_chain():
+    """BUG 回归（v3.6.3）：AR/消费/车载光学不能被误判为「不在 AI 链」。
+
+    水晶光电式标的（光学光电子 · AR/VR + 相机模组 · 404 亿）必须 ai_chain_hit=True
+    且落 neutral（在链但卡位不够硬），而不是 bearish/0。
+    """
+    from lib.investor_evaluator import evaluate
+    f = _features("水晶光电式", "光学光电子", 404,
+                  "光波导 滤光片 相机模组 AR/VR 车载光学 薄膜光学", 5, 6,
+                  growth="30%")
+    assert f["ai_chain_hit"] is True, "AR/光学族关键词必须命中 AI 链"
+    r = evaluate("serenity", f)
+    assert r["signal"] == "neutral", f"应 neutral（在链但非卡点），实际 {r['signal']}"
+
+
 # ─── --school I 锁定 (Serenity 独立成组) ──────────────────────────
 
 def test_school_lock_I_only_serenity():

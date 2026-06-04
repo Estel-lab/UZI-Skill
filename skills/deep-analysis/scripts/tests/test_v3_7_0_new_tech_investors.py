@@ -38,7 +38,8 @@ def test_group_distribution_after_v37():
     from lib.investor_db import INVESTORS
     from collections import Counter
     dist = Counter(i["group"] for i in INVESTORS)
-    expected = {"A": 6, "B": 9, "C": 7, "D": 4, "E": 7, "F": 23, "G": 4, "H": 5}
+    # 注：Serenity 已从 H 拆出独立成 I 组（重磅角色）· H 仅留 4 位科技领袖
+    expected = {"A": 6, "B": 9, "C": 7, "D": 4, "E": 7, "F": 23, "G": 4, "H": 4, "I": 1}
     assert dict(dist) == expected, f"分组分布 {dict(dist)} != {expected}"
 
 
@@ -186,8 +187,10 @@ def test_chanos_neutral_on_clean_company():
 
 def test_school_labels_includes_h():
     from lib.investor_evaluator import SCHOOL_LABELS
-    assert "H" in SCHOOL_LABELS
-    assert "AI" in SCHOOL_LABELS["H"] or "卡位" in SCHOOL_LABELS["H"]
+    # H = 科技领袖派（4 位大亨）· Serenity 的「AI 卡位/瓶颈猎手」已独立为 I 组
+    assert "H" in SCHOOL_LABELS and SCHOOL_LABELS["H"]
+    assert "I" in SCHOOL_LABELS
+    assert "AI" in SCHOOL_LABELS["I"] or "卡位" in SCHOOL_LABELS["I"]
 
 
 def test_school_lock_banner_renders_h_with_color():

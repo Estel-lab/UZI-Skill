@@ -129,6 +129,7 @@ def test_run_py_has_school_argument():
     """v3.5.0 · run.py argparse 必须含 --school choices=[A-G]."""
     run_py = (Path(__file__).resolve().parents[4] / "run.py").read_text(encoding="utf-8")
     assert '"--school"' in run_py
-    assert 'choices=["A", "B", "C", "D", "E", "F", "G"]' in run_py
+    # v3.7.0 起 choices 扩到 A-I (新增 H 科技领袖派 + I Serenity 卡位猎手)
+    assert 'choices=["A", "B", "C", "D", "E", "F", "G", "H", "I"]' in run_py
     # 应设置 UZI_SCHOOL env · 让 evaluator 读取
     assert 'UZI_SCHOOL' in run_py

@@ -7,6 +7,26 @@
 
 ---
 
+## v3.6.3 (2026-06-03 · 重磅角色 Serenity · AI 卡位/瓶颈猎手 I 组)
+
+### BUG · Serenity 卡位关键词库漏掉 AR/消费光学，把光学股误判成「不在 AI 链」
+
+- **症状**：实测 `python run.py 002273 --depth lite`（水晶光电，真实行业「光学光电子」· AR/VR + 车载光学 + iPhone 相机模组 · 市值 404 亿）· Serenity 给出 `bearish / 0`，headline「不在 AI 产业链上 —— 对我没有意义」。但水晶光电明显踩在 AR/AI 光学链上，应识别为「在链但卡位不够硬 → neutral」，而非一票否决。
+- **位置**：`skills/deep-analysis/scripts/lib/stock_features.py` · 派生特征 `ai_chokepoint_score` 的 `_AI_CHOKEPOINT_KW` 关键词库
+- **根因**：关键词库只覆盖了**数据中心光**（光模块/CPO/光通信/光器件/激光器）+ 先进封装 + 化合物半导体 + 互连 + 算力，**漏了 AR/消费/车载光学族**（光学/光电子/光学元件/光波导/滤光片/镀膜/棱镜/镜头/相机模组/AR-VR/近眼显示/车载光学）。`光学光电子` 行业整段命中 0 词 → `ai_chain_hit=False` → 直接腰斩到 score≈0。
+- **影响**：所有 AR/VR/消费光学/车载光学方向的真实卡位候选（水晶光电、蓝特光学、舜宇、长光华芯等）会被 Serenity 误判为「不在 AI 链」而错杀，丧失「在链→再按不可替代性/市值判断」的分级能力。
+- **修法**：`_AI_CHOKEPOINT_KW` 扩充一组 AR/光学终端侧词条。**注意刻意不加裸词 `ar`/`vr`/`mr`**（会在 lowercase 的 JSON blob 里匹配到 market/margin/warrant 等英文子串造成全局误命中）· 改用中文词（增强现实/虚拟现实/混合现实/头显/近眼显示）+ 带斜杠的 `ar/vr` + `ar眼镜`。
+- **验证**：
+  - 水晶光电真实数据重评 → `ai_chain_hit=True`（命中 光学/光电子/相机模组/ar-vr/车载光学）· 卡位分 70.1 · 但不可替代=False(切换5+规模6=11<12) + 市值404亿>300 → **neutral / 59**「命中 AI 链但可替代性偏高、市值偏大，不是真瓶颈」（地道的 Serenity 视角）
+  - `test_serenity_rules.py` 7 项不破：白酒(高粱酿造)/银行(存款贷款) 仍 `ai_chain_hit=False` → bearish（无 AR/光学词误命中）
+  - 全量 532 passed
+- **未来改该区域注意事项**：
+  - **永远不要在 `_AI_CHOKEPOINT_KW` 加 2 字母以内的裸英文词**（ar/vr/mr/ic/ai 单独）· blob 是 lowercase 拼接的中英文 + JSON · 短英文子串必然误命中。要加英文必须够长够特异（waveguide / micro-led / cowos）。
+  - 扩词只影响 `ai_chain_hit` 这道**门槛**；是否 bullish 仍由 `chokepoint≥70 + 不可替代 + 中小市值` 三条 weight-5 规则把关。所以扩词宁可**宽进严出**，不会让普通光学股变成 Serenity 重仓。
+  - 改词库后必跑 `test_serenity_rules.py::test_bearish_on_non_ai_regardless_of_moat`（确保非 AI 股仍被否）。
+
+---
+
 ## v3.6.2 (2026-06-03 · cninfo 翻页长尾 #68 + install-hermes.sh pip 探测 #69)
 
 ### BUG #68 · cninfo 公告分页 854 页拖几小时

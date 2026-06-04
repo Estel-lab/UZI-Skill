@@ -390,6 +390,7 @@ def extract_features(raw: dict, dims: dict) -> dict:
         _chain_txt, _ind_txt, text,  # `text` = 事件 timeline (已 lower)
     ]).lower()
     _AI_CHOKEPOINT_KW = [
+        # 数据中心光 / 先进封装 / 化合物半导体 / 互连 / 算力
         "光模块", "光芯片", "cpo", "光引擎", "硅光", "光通信", "光器件", "激光器", "eml", "vcsel",
         "hbm", "cowos", "先进封装", "封装基板", "abf", "载板",
         "inp", "磷化铟", "砷化镓", "化合物半导体", "衬底", "外延", "晶体生长",
@@ -397,6 +398,11 @@ def extract_features(raw: dict, dims: dict) -> dict:
         "液冷", "散热", "电源", "bbu", "服务器电源", "pdu",
         "交换机", "算力", "ai 芯片", "asic", "gpu", "risc-v", "存储", "ddr",
         "ai server", "ai 服务器", "数据中心", "data center", "光纤", "空芯光纤",
+        # AR/VR 近眼显示 + 消费/车载光学（AI 终端侧光学链）· 注意不用裸词 ar/vr 防误匹配
+        "光学", "光电子", "光学元件", "光学薄膜", "光波导", "衍射光波导", "waveguide",
+        "光栅", "滤光片", "镀膜", "棱镜", "微棱镜", "镜头", "摄像模组", "相机模组", "光学镜片",
+        "增强现实", "虚拟现实", "混合现实", "头显", "近眼显示", "ar/vr", "ar 眼镜", "ar眼镜",
+        "micro-led", "microled", "硅基oled", "车载光学", "衍射光学", "晶圆级光学",
     ]
     _ai_hit = [kw for kw in _AI_CHOKEPOINT_KW if kw in _blob]
     f["ai_chain_hit"] = len(_ai_hit) > 0

@@ -1,5 +1,32 @@
 # Release Notes
 
+## v3.7.1 — 2026-06-04 (README 首页补 Serenity 介绍 + `--school H/I` 放开)
+
+### 🐛 用户反馈 · README 没把 Serenity 写清楚
+
+v3.6.3 加了 Serenity、v3.7.0 加了 13 位科技大佬，但 README 首页评审团表格还停在旧的"52 人 / 7 组"，没反映：
+- B 派 9 人 / C 派 7 人 / E 派 7 人 / G 派 4 人（v3.7.0 新增的 9 人没进表）
+- H 组「科技领袖派」(黄仁勋/Musk/Altman/Saylor) + I 组 Serenity 完全没出现
+- Serenity 这个重磅角色的**作用和介绍**首页一字未提
+
+### ✅ 修复
+
+1. **评审团章节重写** · 52→65 人 · 7→9 组完整表格（A–I）· 规则数 180→236
+2. **新增专门的 Serenity 介绍块**（`## 🧠 I 组 · Serenity · AI 卡位/瓶颈猎手`）：
+   - 她是谁（前 AI 科学家 / @aleabitoreddit / $AXTI 成名战）+ 未审计免责声明
+   - 她在 UZI-Skill 里的作用（Chokepoint Theory 卡脖子瓶颈点投资法）
+   - 「卡位决定态度」打分逻辑表（卡住→看多 / 不硬→中性 / 没卡到→skip）
+   - `--school I` / `--school H` 用法 + 方法论文档链接
+3. **`--school H/I` 实际放开**（bug fix）：v3.7.0 起 evaluator 的 `SCHOOL_LABELS` 已含 H/I，但 `run.py` argparse 的 `choices` 还停在 A-G，导致文档说能用、实跑报错。现 choices 扩到 A-I + `_SCHOOL_NAMES` 补 H/I 中文名
+4. **全文档计数同步** · README / CLAUDE.md / AGENTS.md / GEMINI.md 当前状态的"52 评委"→"65 评委"（历史 changelog 不动）
+
+### 🧪 测试
+
+- 更新 `test_run_py_has_school_argument` 断言至 A-I
+- **533/533 全过**
+
+---
+
 ## v3.7.0 — 2026-06-03 (13 位新晋科技大佬评委 · 52→65 评委)
 
 ### ✨ 用户反馈 · 评委库新晋科技/AI 视角覆盖不足
@@ -46,9 +73,9 @@
 
 ---
 
-## v3.6.3 — 2026-06-03 (重磅角色 Serenity · AI 卡位/瓶颈猎手 H 组)
+## v3.6.3 — 2026-06-03 (重磅角色 Serenity · AI 卡位/瓶颈猎手 · 独立 I 组)
 
-### ✨ Feature · 新增第 52 位评委 Serenity（独立 H 组）
+### ✨ Feature · 新增重磅评委 Serenity（独立 I 组）
 
 把 X 爆火的 AI 供应链「卡脖子/瓶颈点」投资人 **Serenity (@aleabitoreddit)** 作为重磅角色接入评审团。参考 [serenity-alpha skill](https://github.com/haskaomni/serenity-skill/tree/main/serenity-alpha) 的方法论，并爬取其 X 真实言论作为语气库。
 
@@ -57,20 +84,24 @@
 - **产品没卡到位 / 不在 AI 链上 → bearish 不碰**（白酒/银行即便护城河满分也 score=0）
 - 在链但卡位不够硬 → neutral 待验证（等客户 roadmap / 缺货信号）
 
+**独立成组**：Serenity 单独占 **I 组**「AI 卡位/瓶颈猎手」，与同期 v3.7.0 加入 H 组的科技领袖派（黄仁勋/马斯克/Altman/Saylor）分开，互不干扰。`--school I` 可单锁 Serenity 视角，报告 banner 配专属 🔗 配色。
+
 **改动**：
-- `investor_db.py` H 组 + `serenity` 条目（`tier:flagship`）· `assert_count` 51→52
-- `investor_criteria.py` `SERENITY_RULES`（5 条）· `investor_evaluator.py` `SCHOOL_LABELS["H"]`（支持 `--school H`）
-- `investor_personas.py` / `investor_profile.py` / `investor_knowledge.py` · `agents/investor-panel.md` Group H profile
-- `stock_features.py` `ai_chokepoint_score` 等派生特征
+- `investor_db.py` 新建 I 组 + `serenity` 条目（`tier:flagship`）
+- `investor_criteria.py` `SERENITY_RULES`（5 条）· `investor_evaluator.py` `SCHOOL_LABELS["I"]`（支持 `--school I`）· `report/institutional.py` I 组 banner 配色 · `pipeline/score_fns.py` I 组流派标签
+- `investor_personas.py` / `investor_profile.py` / `investor_knowledge.py` · `agents/investor-panel.md` Group I profile
+- `stock_features.py` `ai_chokepoint_score` 等派生特征（关键词库覆盖数据中心光 + AR/消费/车载光学，见 BUGS-LOG）
 - `investor-cards.json` 置顶高亮卡片（`flagship:true`）
 
+**实测**：`run.py 002273 --depth lite`（水晶光电·光学光电子·404 亿）→ Serenity **neutral / 59**「在 AR/AI 光学链上但可替代性偏高、市值偏大，不是真瓶颈」（地道视角，非一票否决）。实测中发现并修复关键词库漏掉 AR/光学族的 bug（详见 BUGS-LOG v3.6.3）。
+
 **新增文档/语料**：
-- `references/group-h-serenity.md` — H 组方法论
+- `references/group-i-serenity.md` — I 组方法论
 - `fin-methods/serenity-bottleneck.md` — 独立「瓶颈点投资法」（六步法 + alpha 5 维评分 + 报告区块规范 + $AXTI 范例）
 - `references/serenity-voice.md` — 底层知识库 + 语气模拟库（8 条 X 原话）· 并入 `quotes-knowledge-base.md`
 - `docs/serenity-research-dossier.md` — 全网研究方法评价档案（20 条来源 · 正反评价逐条）
 
-7 个新回归测试（`test_serenity_rules.py`）· 总 **514 passed**。
+8 个新回归测试（`test_serenity_rules.py`）· 总 **533 passed**。
 
 ---
 

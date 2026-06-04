@@ -291,8 +291,8 @@ def main():
                         help="v2.7.1 · 启用 XueQiu Playwright 登录态抓取实盘比赛持仓（首次需 `python -m lib.xueqiu_browser login`）")
     parser.add_argument("--depth", choices=["lite", "medium", "deep"], default=None,
                         help="v2.10.2 · 思考深度 · lite(1-2min) / medium(5-8min · 默认) / deep(15-20min · 含 Bull-Bear 辩论 + Segmental)")
-    parser.add_argument("--school", choices=["A", "B", "C", "D", "E", "F", "G"], default=None,
-                        help="v3.5.0 · 锁定单一流派视角 · A价值/B成长/C宏观/D技术/E中国价投/F游资/G量化 · 其他派评委 skip · 报告顶部标注")
+    parser.add_argument("--school", choices=["A", "B", "C", "D", "E", "F", "G", "H", "I"], default=None,
+                        help="v3.5.0 · 锁定单一流派视角 · A价值/B成长/C宏观/D技术/E中国价投/F游资/G量化/H科技领袖派/I Serenity卡位猎手 · 其他派评委 skip · 报告顶部标注")
     parser.add_argument("--versus", nargs="+", metavar="TICKER",
                         help="v3.6.0 · 多股横向对比模式 · 接受 2-4 个代码 / 中文名 · 输出单 HTML "
                              "(如 --versus 600519.SH 000858.SZ · 自动 resume 复用 cache)")
@@ -335,8 +335,9 @@ def main():
     if args.school:
         os.environ["UZI_SCHOOL"] = args.school
         _SCHOOL_NAMES = {"A": "价值派", "B": "成长派", "C": "宏观派", "D": "技术派",
-                         "E": "中国价投", "F": "A 股游资", "G": "量化"}
-        print(f"🎯 已锁定 {args.school} 派视角 · {_SCHOOL_NAMES[args.school]} · 其他派评委 skip")
+                         "E": "中国价投", "F": "A 股游资", "G": "量化",
+                         "H": "科技领袖派", "I": "Serenity · AI 卡位/瓶颈猎手"}
+        print(f"🎯 已锁定 {args.school} 派视角 · {_SCHOOL_NAMES.get(args.school, args.school)} · 其他派评委 skip")
 
     # v3.6.0 · 横向对比模式 · 早返回 · 不走单股分析
     if args.versus:

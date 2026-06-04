@@ -557,7 +557,7 @@ PERSONAS: dict[str, dict[str, list[str]]] = {
         "neutral": ["因子分散，中性。"],
     },
 
-    # ═══════════════ Group H · AI 卡位/瓶颈猎手 ═══════════════
+    # ═══════════════ Group I · AI 卡位/瓶颈猎手 ═══════════════
     # Serenity (@aleabitoreddit) — 语料源：references/serenity-voice.md
     "serenity": {
         "bullish": [
