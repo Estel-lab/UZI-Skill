@@ -71,7 +71,7 @@ hermes skills install wbh604/UZI-Skill/skills/trap-detector
 
 ---
 
-首次用 `/analyze-stock 600519.SH` 触发 `deep-analysis` 时，skill 会根据自身 SKILL.md 的提示自动让 LLM 跑一次 `pip install -r ~/.hermes/skills/deep-analysis/requirements.txt`，之后永久生效。
+首次用自然语言（如「分析 600519.SH」）触发 `deep-analysis` 时，skill 会根据自身 SKILL.md 的提示自动让 LLM 跑一次 `pip install -r ~/.hermes/skills/deep-analysis/requirements.txt`，之后永久生效。
 
 ## 升级提示（重要）
 
@@ -106,8 +106,11 @@ done
 ```bash
 hermes                       # 打开 TUI
 /skills                      # 列出已装 skill · 应见 deep-analysis / investor-panel / lhb-analyzer / trap-detector
-/analyze-stock 600519.SH     # 触发分析 · lite 模式下 30-60 秒出报告
+分析 600519.SH               # 用自然语言触发 · 自动命中 deep-analysis skill · lite 模式 30-60 秒出报告
 ```
+
+> ⚠️ **Hermes 用自然语言触发 skill，没有 `/analyze-stock` 这种 slash 命令**（那是 Claude Code 插件命令，Hermes 不注册 `commands/`）。
+> 直接说「分析 600519.SH」「深度分析 贵州茅台」「帮我看看 00700.HK」即可——skill 会按 SKILL.md 的描述关键词自动触发。
 
 报告生成到：
 - `~/.hermes/skills/deep-analysis/scripts/reports/<ticker>_<date>/full-report-standalone.html`
@@ -129,13 +132,15 @@ TUSHARE_TOKEN=your_tushare_token
 
 ## 三档思考深度
 
-Hermes 用户推荐默认跑 `lite`（30-60s）或 `medium`（2-4min），触发时传 `--depth` 即可。
+Hermes 用户推荐默认跑 `lite`（30-60s）或 `medium`（2-4min）。用自然语言带上档位即可：
 
 ```
-/analyze-stock 00700.HK --depth lite
-/analyze-stock AAPL --depth medium
-/analyze-stock 600519.SH --depth deep    # 15-20min，含 Bull-Bear 辩论
+分析 00700.HK，用 lite 模式
+分析 AAPL，medium 深度
+深度分析 600519.SH（deep · 15-20min，含 Bull-Bear 辩论）
 ```
+
+> Hermes 没有 `/analyze-stock --depth` 这种 slash 语法 · 直接在自然语言里说档位 · agent 会传给脚本。
 
 ## 与其他环境的关系
 
@@ -158,8 +163,12 @@ Hermes 用户推荐默认跑 `lite`（30-60s）或 `medium`（2-4min），触发
 - 检查依赖装哪了：`which pip && pip show akshare`
 - 重跑：`~/.hermes/venv/bin/pip install -r ~/.hermes/skills/deep-analysis/requirements.txt`
 
+**问题：`Unknown command: /analyze-stock`（issue #76）**
+- Hermes **没有** `/analyze-stock` 这个命令 —— 那是 Claude Code 的 slash 命令
+- 改用自然语言：直接说「分析 600519.SH」/「深度分析 贵州茅台」即可触发
+
 **问题：网络受限跑不完**
-- 降到 lite：`/analyze-stock <ticker> --depth lite`
+- 降到 lite：自然语言里说「用 lite 模式分析 <ticker>」
 - 设 `MX_APIKEY` 切换到东财妙想主源
 - 参考 [AGENTS.md 网络受限章节](./AGENTS.md)
 
