@@ -1,0 +1,69 @@
+name: "\U0001F4CA UZI 每日股票分析"
+
+on:
+  schedule:
+    - cron: '0 1 * * 1-5'
+  workflow_dispatch:
+    inputs:
+      stocks:
+        description: '股票代码 (空格分隔)'
+        required: true
+        default: 'NVDA AAPL MSFT'
+      mode:
+        description: '分析模式'
+        required: true
+        default: 'quick'
+        type: choice
+        options:
+          - quick
+          - deep
+
+permissions:
+  contents: write
+
+jobs:
+  analyze:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: "\u2699\uFE0F 设置 Python"
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: 'pip'
+
+      - name: "\U0001F4E6 安装依赖"
+        run: |
+          pip install -r requirements.txt
+          playwright install chromium --with-deps
+
+      - name: "\U0001F50D 运行分析"
+        env:
+          MX_APIKEY: ${{ secrets.MX_APIKEY }}
+        run: |
+          STOCKS="${{ github.event.inputs.stocks || 'NVDA AAPL MSFT' }}"
+          MODE="${{ github.event.inputs.mode || 'quick' }}"
+          mkdir -p reports
+          for stock in $STOCKS; do
+            echo "=== 分析: $stock ==="
+            python run.py "$stock" --no-browser 2>&1 | tee "reports/${stock}_report.log" || true
+          done
+
+      - name: "\U0001F4CE 上传报告"
+        uses: actions/upload-artifact@v4
+        with:
+          name: analysis-reports
+          path: reports/
+
+      - name: "\U0001F4DD 提交报告"
+        run: |
+          git config user.name "UZI Bot"
+          git config user.email "uzi-bot@users.noreply.github.com"
+          git add reports/ -f 2>/dev/null || true
+          git diff --cached --quiet || (
+            git commit -m "每日分析报告 $(date +'%Y-%m-%d')"
+            git push
+          )
