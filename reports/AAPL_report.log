@@ -1,0 +1,103 @@
+
+📊 标准分析 · depth=medium · 预计 5-8 分钟
+  · fetchers: 20/20 维
+  · 评委: 51 位
+  · 机构方法: 17 种
+  · ddgs 预算: 30
+  · fund_holders: 头部 20 家完整
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🎯 游资（UZI）Skills v3.9.2 · 深度分析引擎
+   目标: AAPL
+   环境: 本地
+   浏览器: ✗ (headless)
+   Cloudflare: ✗ 未安装
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+ℹ️  未设置 MX_APIKEY · 走默认 akshare/xueqiu 链（可在 .env 里配置）
+🚀 [run.py] v3.0.0 pipeline · 默认路径
+🚀 [pipeline.run] collect · AAPL
+  [pipeline] wave 1 · 0_basic · partial (0.8s)
+  [pipeline] wave 2 · 16 fetcher (max_workers=6)
+    ✓ 4_peers              partial
+    ✓ 5_chain              partial
+    ✓ 6_fund_holders       partial
+    ✓ 6_research           partial
+    ✓ 8_materials          partial
+    ✓ 11_governance        partial
+    ✓ 15_events            partial
+    ✓ 16_lhb               partial
+    ✓ 14_moat              partial
+    ✓ 2_kline              partial
+    ✓ 1_financials         partial
+    ✓ 10_valuation         partial
+    ✓ 12_capital_flow      partial
+    ✓ 19_contests          partial
+    ✓ 17_sentiment         full
+    ✓ 18_trap              partial
+  [pipeline] wave 3 · 4 dependent fetcher
+    ✓ 13_policy            partial
+    ✓ 3_macro              partial
+    ✓ 7_industry           partial
+    ✓ 9_futures            partial
+  [pipeline] collect 完成 · 37.2s
+✅ [pipeline.run] raw_data.json 已写 · 进入 scoring 段（v3.0 纯函数编排）
+   ⚠️ 3_macro        兜底失败 · agent 应主动 web search 补抓
+   ⚠️ 7_industry     兜底失败 · agent 应主动 web search 补抓
+   ⚠️ 8_materials    兜底失败 · agent 应主动 web search 补抓
+   ⚠️ 9_futures      兜底失败 · agent 应主动 web search 补抓
+   ⚠️ 13_policy      兜底失败 · agent 应主动 web search 补抓
+   ⚠️ 15_events      兜底失败 · agent 应主动 web search 补抓
+   合计 · 充足 0 · 兜底成功 0 · 失败 6（共 6 维）
+   ℹ️  Playwright skip · profile=medium · opt-in 未启用 · export UZI_PLAYWRIGHT_ENABLE=1 启用后重跑
+0it [00:00, ?it/s]                  
+  🎯 v2.7 风格识别: balanced (中性兜底) — fund 61.5→61.5 · consensus 23.2→27.6
+
+⚠️  未检测到 agent_analysis.json · 将使用脚本骨架生成 synthesis
+   提示: Claude agent 应在 stage1 之后写入 .cache/AAPL/agent_analysis.json
+   然后再调用 stage2() · 这样报告质量会显著提升
+
+⚖ Task 4 · 综合研判
+0it [00:00, ?it/s]                  
+  🎯 v2.7 风格识别: balanced (中性兜底) — fund 61.5→61.5 · consensus 23.2→27.6
+  综合评分: 47.9/100 · 谨慎 · 1 派看多 / 6 派看空
+  agent_reviewed: False
+
+📄 Task 5 · 报告组装
+✓ Self-Review · AAPL (U)
+  critical=0 warning=2 info=0
+  reviewed_at=2026-07-08T15:46:05
+
+  🟡 WARNING (2):
+    [agent_analysis] agent_analysis.json 不存在（lite/CLI 直跑模式可接受）
+      evidence: file not found
+      fix: CLI 直跑无 agent 环境可以忽略此项；若走 Claude Code/Codex/Cursor 则 agent 必须读 panel.json + raw_data.json 后写 agent_analysis.json
+    [synthesis] commentary 提到 苹果产业链 但 main_business 未见相关业务
+      evidence: claim mentions 苹果|Apple, main_business='Consumer Electronics'
+      fix: 在 raw_data.dimensions['5_chain'] 里找到明确证据，否则删除该关联
+⚠  AAPL: 2 warning 已记录，继续生成 HTML
+[ok] Report assembled: reports/AAPL_20260708/full-report.html
+  → reports/AAPL_20260708/full-report.html
+[ok] standalone report: reports/AAPL_20260708/full-report-standalone.html
+     inlined 142 avatar refs
+     size: 662,507 bytes (646 KB)
+[ok] share-card.png: reports/AAPL_20260708/share-card.png
+  ✓ 朋友圈分享卡 PNG
+[ok] war-report.png: reports/AAPL_20260708/war-report.png
+  ✓ 战报横图 PNG
+
+✅ Stage 2 完成!
+   报告: /home/runner/work/UZI-Skill/UZI-Skill/skills/deep-analysis/scripts/reports/AAPL_20260708/full-report-standalone.html
+   大小: 687 KB
+   → 走 pipeline · skip legacy stage1/stage2
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+📄 报告路径: /home/runner/work/UZI-Skill/UZI-Skill/skills/deep-analysis/scripts/reports/AAPL_20260708/full-report-standalone.html
+   大小: 687 KB
+
+💡 提示: 当前环境无法打开浏览器
+   方式 1: 下载文件到本地打开
+   方式 2: python run.py AAPL --remote  ← 生成公网链接，手机就能看
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+✅ 完成!
