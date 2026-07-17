@@ -18,21 +18,21 @@
 ℹ️  未设置 MX_APIKEY · 走默认 akshare/xueqiu 链（可在 .env 里配置）
 🚀 [run.py] v3.0.0 pipeline · 默认路径
 🚀 [pipeline.run] collect · NVDA
-  [pipeline] wave 1 · 0_basic · partial (0.5s)
+  [pipeline] wave 1 · 0_basic · partial (0.4s)
   [pipeline] wave 2 · 16 fetcher (max_workers=6)
-    ✓ 6_research           partial
     ✓ 5_chain              partial
     ✓ 4_peers              partial
     ✓ 6_fund_holders       partial
+    ✓ 6_research           partial
     ✓ 8_materials          partial
     ✓ 11_governance        partial
     ✓ 15_events            partial
     ✓ 16_lhb               partial
     ✓ 2_kline              partial
+    ✓ 1_financials         partial
     ✓ 10_valuation         partial
     ✓ 12_capital_flow      partial
-    ✓ 1_financials         partial
-    ✓ 14_moat              full
+    ✓ 14_moat              partial
     ✓ 19_contests          partial
     ✓ 18_trap              partial
     ✓ 17_sentiment         full
@@ -41,18 +41,17 @@
     ✓ 3_macro              partial
     ✓ 7_industry           partial
     ✓ 9_futures            partial
-  [pipeline] collect 完成 · 40.7s
+  [pipeline] collect 完成 · 45.2s
 ✅ [pipeline.run] raw_data.json 已写 · 进入 scoring 段（v3.0 纯函数编排）
-   ✓ 3_macro        via ddgs: 当前宏观环境具有投资潜力的有哪些-财经知识-金投财经频道-金投网 — 结合当前的全球宏观环境、供需基本面以及地缘政治局势…
-   ✓ 7_industry     via ddgs: 2026... - BBC News 中文 — 6月17日，在2026年国际足协世界杯（FIFA World Cup）一…
+   ✓ 3_macro        via ddgs: 2026... - BBC News 中文 — 6月17日，在2026年国际足协世界杯（FIFA World Cup）一…
+   ✓ 7_industry     via ddgs: 《2026全球半导体行业趋势报告》现已发布 | 德勤中国 — 德勤2026年全球半导体行业展望预测，受人工智能（AI）基…
    ✓ 8_materials    via ddgs: nemotron-3-super-120b-a12b Model by NVIDIA | NVIDIA NIM — Sk…
-   ✓ 9_futures      via ddgs: Manus: Hands On AI — Manus is the action engine that goes be…
-   ✓ 13_policy      via ddgs: 2026... - BBC News 中文 — 所有曾经赢得世界杯的国家，都是100年前、殖民主义结束之前，已经主导这项…
-   ✓ 15_events      via ddgs: 英偉達 (NVDA) 最新股票消息和頭條新聞 - Yahoo 財經 — Nvidia Stock Falls as Te…
-   合计 · 充足 0 · 兜底成功 6 · 失败 0（共 6 维）
+   ✓ 9_futures      via ddgs: 期货公司半年报预告迎“开门红”！ 这家净利最高预增近89% - 21财经 — 业内人士表示，随着我国期货品种体系不断完善…
+   ✓ 15_events      via ddgs: 英偉達 (NVDA) 最新新聞稿和企業新聞 - Yahoo 財經 — 0.8683. +0.0004 +0.05%. 廣…
+   合计 · 充足 1 · 兜底成功 5 · 失败 0（共 6 维）
    ℹ️  Playwright skip · profile=medium · opt-in 未启用 · export UZI_PLAYWRIGHT_ENABLE=1 启用后重跑
 0it [00:00, ?it/s]                  
-  🎯 v2.7 风格识别: balanced (中性兜底) — fund 62.3→62.3 · consensus 32.7→36.7
+  🎯 v2.7 风格识别: balanced (中性兜底) — fund 62.3→62.3 · consensus 32.4→36.7
 
 ⚠️  未检测到 agent_analysis.json · 将使用脚本骨架生成 synthesis
    提示: Claude agent 应在 stage1 之后写入 .cache/NVDA/agent_analysis.json
@@ -60,38 +59,38 @@
 
 ⚖ Task 4 · 综合研判
 0it [00:00, ?it/s]                  
-  🎯 v2.7 风格识别: balanced (中性兜底) — fund 62.3→62.3 · consensus 32.7→36.7
+  🎯 v2.7 风格识别: balanced (中性兜底) — fund 62.3→62.3 · consensus 32.4→36.7
   综合评分: 52.1/100 · 观望偏空 · 1 派看多 / 5 派看空
   agent_reviewed: False
 
 📄 Task 5 · 报告组装
 ✓ Self-Review · NVDA (U)
   critical=0 warning=1 info=0
-  reviewed_at=2026-07-16T01:32:51
+  reviewed_at=2026-07-17T01:33:11
 
   🟡 WARNING (1):
     [agent_analysis] agent_analysis.json 不存在（lite/CLI 直跑模式可接受）
       evidence: file not found
       fix: CLI 直跑无 agent 环境可以忽略此项；若走 Claude Code/Codex/Cursor 则 agent 必须读 panel.json + raw_data.json 后写 agent_analysis.json
 ⚠  NVDA: 1 warning 已记录，继续生成 HTML
-[ok] Report assembled: reports/NVDA_20260716/full-report.html
-  → reports/NVDA_20260716/full-report.html
-[ok] standalone report: reports/NVDA_20260716/full-report-standalone.html
+[ok] Report assembled: reports/NVDA_20260717/full-report.html
+  → reports/NVDA_20260717/full-report.html
+[ok] standalone report: reports/NVDA_20260717/full-report-standalone.html
      inlined 142 avatar refs
-     size: 669,810 bytes (654 KB)
-[ok] share-card.png: reports/NVDA_20260716/share-card.png
+     size: 662,833 bytes (647 KB)
+[ok] share-card.png: reports/NVDA_20260717/share-card.png
   ✓ 朋友圈分享卡 PNG
-[ok] war-report.png: reports/NVDA_20260716/war-report.png
+[ok] war-report.png: reports/NVDA_20260717/war-report.png
   ✓ 战报横图 PNG
 
 ✅ Stage 2 完成!
-   报告: /home/runner/work/UZI-Skill/UZI-Skill/skills/deep-analysis/scripts/reports/NVDA_20260716/full-report-standalone.html
-   大小: 697 KB
+   报告: /home/runner/work/UZI-Skill/UZI-Skill/skills/deep-analysis/scripts/reports/NVDA_20260717/full-report-standalone.html
+   大小: 690 KB
    → 走 pipeline · skip legacy stage1/stage2
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-📄 报告路径: /home/runner/work/UZI-Skill/UZI-Skill/skills/deep-analysis/scripts/reports/NVDA_20260716/full-report-standalone.html
-   大小: 697 KB
+📄 报告路径: /home/runner/work/UZI-Skill/UZI-Skill/skills/deep-analysis/scripts/reports/NVDA_20260717/full-report-standalone.html
+   大小: 690 KB
 
 💡 提示: 当前环境无法打开浏览器
    方式 1: 下载文件到本地打开
