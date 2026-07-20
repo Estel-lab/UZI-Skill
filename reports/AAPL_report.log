@@ -18,40 +18,39 @@
 ℹ️  未设置 MX_APIKEY · 走默认 akshare/xueqiu 链（可在 .env 里配置）
 🚀 [run.py] v3.0.0 pipeline · 默认路径
 🚀 [pipeline.run] collect · AAPL
-  [pipeline] wave 1 · 0_basic · partial (0.3s)
+  [pipeline] wave 1 · 0_basic · partial (0.6s)
   [pipeline] wave 2 · 16 fetcher (max_workers=6)
     ✓ 6_fund_holders       partial
-    ✓ 4_peers              partial
-    ✓ 6_research           partial
     ✓ 5_chain              partial
+    ✓ 6_research           partial
+    ✓ 4_peers              partial
     ✓ 11_governance        partial
     ✓ 8_materials          partial
     ✓ 15_events            partial
     ✓ 16_lhb               partial
     ✓ 14_moat              partial
     ✓ 2_kline              partial
+    ✓ 1_financials         partial
     ✓ 10_valuation         partial
     ✓ 12_capital_flow      partial
-    ✓ 1_financials         partial
+    ✓ 19_contests          partial
     ✓ 17_sentiment         full
     ✓ 18_trap              partial
-    ✓ 19_contests          partial
   [pipeline] wave 3 · 4 dependent fetcher
     ✓ 13_policy            partial
     ✓ 3_macro              partial
     ✓ 7_industry           partial
     ✓ 9_futures            partial
-  [pipeline] collect 完成 · 30.4s
+  [pipeline] collect 完成 · 47.3s
 ✅ [pipeline.run] raw_data.json 已写 · 进入 scoring 段（v3.0 纯函数编排）
-   ✓ 3_macro        via ddgs: 2026免费节点分享93个丨每日更新Clash/V2Ray/SSR... — 2026年7月14日免费节点分享说明： 节…
-   ✓ 7_industry     via ddgs: 2026年健康医疗行业市场规模、增速、渗透率、空间测算分析 — 2026年健康医疗行业市场规模、增速、渗透率、空间测算分…
-   ✓ 8_materials    via ddgs: Manage your Apple Account — Your account you use for all App…
+   ✓ 7_industry     via ddgs: IRONLADY НИЖНИЙ НОВГОРОД 2026 22.08.2026 в Нижний... — IRONL…
+   ✓ 8_materials    via ddgs: Official Apple Support — Learn more about popular features a…
    ✓ 9_futures      via ddgs: Kimi AI with K2.6 | Better Coding, Smarter Agents — Try Kimi…
-   ⚠️ 15_events      兜底失败 · agent 应主动 web search 补抓
-   合计 · 充足 1 · 兜底成功 4 · 失败 1（共 6 维）
+   ✓ 15_events      via ddgs: Пополнение PUBG Mobile UC — Купить UC мгновенно, без входа..…
+   合计 · 充足 2 · 兜底成功 4 · 失败 0（共 6 维）
    ℹ️  Playwright skip · profile=medium · opt-in 未启用 · export UZI_PLAYWRIGHT_ENABLE=1 启用后重跑
 0it [00:00, ?it/s]                  
-  🎯 v2.7 风格识别: balanced (中性兜底) — fund 61.5→61.5 · consensus 20.5→26.2
+  🎯 v2.7 风格识别: balanced (中性兜底) — fund 61.5→61.5 · consensus 23.9→29.5
 
 ⚠️  未检测到 agent_analysis.json · 将使用脚本骨架生成 synthesis
    提示: Claude agent 应在 stage1 之后写入 .cache/AAPL/agent_analysis.json
@@ -59,14 +58,14 @@
 
 ⚖ Task 4 · 综合研判
 0it [00:00, ?it/s]                  
-  🎯 v2.7 风格识别: balanced (中性兜底) — fund 61.5→61.5 · consensus 20.5→26.2
-  综合评分: 47.4/100 · 谨慎 · 1 派看多 / 6 派看空
+  🎯 v2.7 风格识别: balanced (中性兜底) — fund 61.5→61.5 · consensus 23.9→29.5
+  综合评分: 48.7/100 · 谨慎 · 1 派看多 / 5 派看空
   agent_reviewed: False
 
 📄 Task 5 · 报告组装
 ✓ Self-Review · AAPL (U)
   critical=0 warning=2 info=0
-  reviewed_at=2026-07-17T01:34:01
+  reviewed_at=2026-07-20T01:34:45
 
   🟡 WARNING (2):
     [agent_analysis] agent_analysis.json 不存在（lite/CLI 直跑模式可接受）
@@ -76,24 +75,24 @@
       evidence: claim mentions 苹果|Apple, main_business='Consumer Electronics'
       fix: 在 raw_data.dimensions['5_chain'] 里找到明确证据，否则删除该关联
 ⚠  AAPL: 2 warning 已记录，继续生成 HTML
-[ok] Report assembled: reports/AAPL_20260717/full-report.html
-  → reports/AAPL_20260717/full-report.html
-[ok] standalone report: reports/AAPL_20260717/full-report-standalone.html
+[ok] Report assembled: reports/AAPL_20260720/full-report.html
+  → reports/AAPL_20260720/full-report.html
+[ok] standalone report: reports/AAPL_20260720/full-report-standalone.html
      inlined 142 avatar refs
-     size: 667,033 bytes (651 KB)
-[ok] share-card.png: reports/AAPL_20260717/share-card.png
+     size: 667,926 bytes (652 KB)
+[ok] share-card.png: reports/AAPL_20260720/share-card.png
   ✓ 朋友圈分享卡 PNG
-[ok] war-report.png: reports/AAPL_20260717/war-report.png
+[ok] war-report.png: reports/AAPL_20260720/war-report.png
   ✓ 战报横图 PNG
 
 ✅ Stage 2 完成!
-   报告: /home/runner/work/UZI-Skill/UZI-Skill/skills/deep-analysis/scripts/reports/AAPL_20260717/full-report-standalone.html
-   大小: 694 KB
+   报告: /home/runner/work/UZI-Skill/UZI-Skill/skills/deep-analysis/scripts/reports/AAPL_20260720/full-report-standalone.html
+   大小: 695 KB
    → 走 pipeline · skip legacy stage1/stage2
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-📄 报告路径: /home/runner/work/UZI-Skill/UZI-Skill/skills/deep-analysis/scripts/reports/AAPL_20260717/full-report-standalone.html
-   大小: 694 KB
+📄 报告路径: /home/runner/work/UZI-Skill/UZI-Skill/skills/deep-analysis/scripts/reports/AAPL_20260720/full-report-standalone.html
+   大小: 695 KB
 
 💡 提示: 当前环境无法打开浏览器
    方式 1: 下载文件到本地打开
