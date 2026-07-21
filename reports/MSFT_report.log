@@ -18,13 +18,13 @@
 ℹ️  未设置 MX_APIKEY · 走默认 akshare/xueqiu 链（可在 .env 里配置）
 🚀 [run.py] v3.0.0 pipeline · 默认路径
 🚀 [pipeline.run] collect · MSFT
-  [pipeline] wave 1 · 0_basic · partial (0.6s)
+  [pipeline] wave 1 · 0_basic · partial (0.7s)
   [pipeline] wave 2 · 16 fetcher (max_workers=6)
     ✓ 4_peers              partial
     ✓ 5_chain              partial
-    ✓ 6_fund_holders       partial
     ✓ 8_materials          partial
     ✓ 6_research           partial
+    ✓ 6_fund_holders       partial
     ✓ 11_governance        partial
     ✓ 15_events            partial
     ✓ 16_lhb               partial
@@ -33,24 +33,25 @@
     ✓ 10_valuation         partial
     ✓ 12_capital_flow      partial
     ✓ 1_financials         partial
-    ✓ 18_trap              partial
     ✓ 19_contests          partial
+    ✓ 18_trap              partial
     ✓ 17_sentiment         full
   [pipeline] wave 3 · 4 dependent fetcher
     ✓ 13_policy            partial
     ✓ 3_macro              partial
     ✓ 7_industry           partial
     ✓ 9_futures            partial
-  [pipeline] collect 完成 · 80.9s
+  [pipeline] collect 完成 · 32.6s
 ✅ [pipeline.run] raw_data.json 已写 · 进入 scoring 段（v3.0 纯函数编排）
+   ✓ 3_macro        via ddgs: 2026年大宗商品价格走势深度预测：从宏观风险到3大板块投资战略 - Dr.market — 解构2026年石油、黄金、…
    ✓ 7_industry     via ddgs: Telegram: View @yandex_infrastructure — Yandex Infrastructur…
    ✓ 8_materials    via ddgs: Search - Microsoft Bing — Search with Microsoft Bing and use…
-   ✓ 9_futures      via ddgs: Telegram: View @yandex_infrastructure — Yandex Infrastructur…
-   ✓ 15_events      via ddgs: Azure云计算营收猛增40%+1900亿美元加码AI基建! 微软(MSFT.US)... — 微软（MSFT）管理层在…
-   合计 · 充足 2 · 兜底成功 4 · 失败 0（共 6 维）
+   ✓ 9_futures      via ddgs: 期货套保工具深度指南：策略、工具、案例与产业实操（含快期终端解决方案） - 信易科技 - 信易科技 — 期货套保工具深度…
+   ✓ 15_events      via ddgs: SEC Filings | Microsoft Corporation — The Investor Relations…
+   合计 · 充足 1 · 兜底成功 5 · 失败 0（共 6 维）
    ℹ️  Playwright skip · profile=medium · opt-in 未启用 · export UZI_PLAYWRIGHT_ENABLE=1 启用后重跑
 0it [00:00, ?it/s]                  
-  🎯 v2.7 风格识别: balanced (中性兜底) — fund 58.7→58.7 · consensus 19.0→23.8
+  🎯 v2.7 风格识别: balanced (中性兜底) — fund 58.7→58.7 · consensus 16.2→21.4
 
 ⚠️  未检测到 agent_analysis.json · 将使用脚本骨架生成 synthesis
    提示: Claude agent 应在 stage1 之后写入 .cache/MSFT/agent_analysis.json
@@ -58,37 +59,37 @@
 
 ⚖ Task 4 · 综合研判
 0it [00:00, ?it/s]                  
-  🎯 v2.7 风格识别: balanced (中性兜底) — fund 58.7→58.7 · consensus 19.0→23.8
-  综合评分: 44.7/100 · 谨慎 · 6 派看空
+  🎯 v2.7 风格识别: balanced (中性兜底) — fund 58.7→58.7 · consensus 16.2→21.4
+  综合评分: 43.8/100 · 谨慎 · 6 派看空
   agent_reviewed: False
 
 📄 Task 5 · 报告组装
 ✓ Self-Review · MSFT (U)
   critical=0 warning=1 info=0
-  reviewed_at=2026-07-20T01:36:23
+  reviewed_at=2026-07-21T01:34:37
 
   🟡 WARNING (1):
     [agent_analysis] agent_analysis.json 不存在（lite/CLI 直跑模式可接受）
       evidence: file not found
       fix: CLI 直跑无 agent 环境可以忽略此项；若走 Claude Code/Codex/Cursor 则 agent 必须读 panel.json + raw_data.json 后写 agent_analysis.json
 ⚠  MSFT: 1 warning 已记录，继续生成 HTML
-[ok] Report assembled: reports/MSFT_20260720/full-report.html
-  → reports/MSFT_20260720/full-report.html
-[ok] standalone report: reports/MSFT_20260720/full-report-standalone.html
+[ok] Report assembled: reports/MSFT_20260721/full-report.html
+  → reports/MSFT_20260721/full-report.html
+[ok] standalone report: reports/MSFT_20260721/full-report-standalone.html
      inlined 142 avatar refs
-     size: 669,802 bytes (654 KB)
-[ok] share-card.png: reports/MSFT_20260720/share-card.png
+     size: 669,224 bytes (653 KB)
+[ok] share-card.png: reports/MSFT_20260721/share-card.png
   ✓ 朋友圈分享卡 PNG
-[ok] war-report.png: reports/MSFT_20260720/war-report.png
+[ok] war-report.png: reports/MSFT_20260721/war-report.png
   ✓ 战报横图 PNG
 
 ✅ Stage 2 完成!
-   报告: /home/runner/work/UZI-Skill/UZI-Skill/skills/deep-analysis/scripts/reports/MSFT_20260720/full-report-standalone.html
+   报告: /home/runner/work/UZI-Skill/UZI-Skill/skills/deep-analysis/scripts/reports/MSFT_20260721/full-report-standalone.html
    大小: 698 KB
    → 走 pipeline · skip legacy stage1/stage2
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-📄 报告路径: /home/runner/work/UZI-Skill/UZI-Skill/skills/deep-analysis/scripts/reports/MSFT_20260720/full-report-standalone.html
+📄 报告路径: /home/runner/work/UZI-Skill/UZI-Skill/skills/deep-analysis/scripts/reports/MSFT_20260721/full-report-standalone.html
    大小: 698 KB
 
 💡 提示: 当前环境无法打开浏览器
