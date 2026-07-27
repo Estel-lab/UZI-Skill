@@ -18,21 +18,21 @@
 ℹ️  未设置 MX_APIKEY · 走默认 akshare/xueqiu 链（可在 .env 里配置）
 🚀 [run.py] v3.0.0 pipeline · 默认路径
 🚀 [pipeline.run] collect · NVDA
-  [pipeline] wave 1 · 0_basic · partial (0.3s)
+  [pipeline] wave 1 · 0_basic · partial (0.6s)
   [pipeline] wave 2 · 16 fetcher (max_workers=6)
+    ✓ 5_chain              partial
     ✓ 6_research           partial
     ✓ 4_peers              partial
-    ✓ 5_chain              partial
-    ✓ 6_fund_holders       partial
     ✓ 8_materials          partial
+    ✓ 6_fund_holders       partial
     ✓ 11_governance        partial
     ✓ 15_events            partial
     ✓ 16_lhb               partial
-    ✓ 2_kline              partial
+    ✓ 2_kline              error
     ✓ 1_financials         partial
     ✓ 10_valuation         partial
     ✓ 12_capital_flow      partial
-    ✓ 14_moat              partial
+    ✓ 14_moat              full
     ✓ 19_contests          partial
     ✓ 18_trap              partial
     ✓ 17_sentiment         full
@@ -41,17 +41,170 @@
     ✓ 3_macro              partial
     ✓ 7_industry           partial
     ✓ 9_futures            partial
-  [pipeline] collect 完成 · 39.3s
+  [pipeline] collect 完成 · 45.4s
 ✅ [pipeline.run] raw_data.json 已写 · 进入 scoring 段（v3.0 纯函数编排）
-   ✓ 3_macro        via ddgs: 洪灏[2026...] - YouTube — 宏观底层逻辑重构：过去 40 年低利率、低通胀的时代彻底结束，美债长端利…
-   ✓ 7_industry     via ddgs: 《2026全球半导体行业趋势报告》现已发布 | 德勤中国 — 德勤2026年全球半导体行业展望预测，受人工智能（AI）基…
-   ✓ 8_materials    via ddgs: World Leader in Artificial Intelligence Computing | NVIDIA —…
-   ✓ 9_futures      via ddgs: [Ink+] Bocchi the Rock! Project (100% Complete) — Title: Boc…
-   ✓ 15_events      via ddgs: NVIDIA Corporation - Financial Reports — NVIDIA announces $8…
+   ✓ 7_industry     via ddgs: 2026-2030年全球热塑性聚氨酯（TPU... — 5.1全球TPU整体市场规模.8.5拉丁美洲市场（巴西、墨西哥等…
+   ✓ 8_materials    via ddgs: nvidianews.nvidia.com/multimedia/corporate/nvidia-logos — Mo…
+   ✓ 9_futures      via ddgs: Manus: Hands On AI — Manus is the action engine that goes be…
+   ✓ 13_policy      via ddgs: 谁挖了孔子的坟？ 文革60周年：破四旧如何毁掉中华文化命脉 - YouTube — 8 002 просмотра 8 …
+   ✓ 15_events      via ddgs: 英偉達 (NVDA) 最新股票消息和頭條新聞 - Yahoo 財經 — Nvidia Stock Steadies, B…
    合计 · 充足 1 · 兜底成功 5 · 失败 0（共 6 维）
    ℹ️  Playwright skip · profile=medium · opt-in 未启用 · export UZI_PLAYWRIGHT_ENABLE=1 启用后重跑
 0it [00:00, ?it/s]                  
-  🎯 v2.7 风格识别: balanced (中性兜底) — fund 62.3→62.3 · consensus 32.7→36.7
+  🎯 v2.7 风格识别: balanced (中性兜底) — fund 60.6→60.6 · consensus 17.4→25.2
+
+⚠️  未检测到 agent_analysis.json · 将使用脚本骨架生成 synthesis
+   提示: Claude agent 应在 stage1 之后写入 .cache/NVDA/agent_analysis.json
+   然后再调用 stage2() · 这样报告质量会显著提升
+
+⚖ Task 4 · 综合研判
+0it [00:00, ?it/s]                  Traceback (most recent call last):
+  File "/home/runner/work/UZI-Skill/UZI-Skill/run.py", line 605, in main
+    run_pipeline(args.ticker, resume=not args.no_resume)
+  File "/home/runner/work/UZI-Skill/UZI-Skill/skills/deep-analysis/scripts/lib/pipeline/run.py", line 63, in run_pipeline
+    return synthesize_and_render(ticker)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/work/UZI-Skill/UZI-Skill/skills/deep-analysis/scripts/lib/pipeline/synthesize.py", line 19, in synthesize_and_render
+    return rrt.stage2(ticker)
+           ^^^^^^^^^^^^^^^^^^
+  File "/home/runner/work/UZI-Skill/UZI-Skill/skills/deep-analysis/scripts/run_real_test.py", line 752, in stage2
+    out = assemble(ti.full)
+          ^^^^^^^^^^^^^^^^^
+  File "/home/runner/work/UZI-Skill/UZI-Skill/skills/deep-analysis/scripts/assemble_report.py", line 359, in assemble
+    raise RuntimeError(
+RuntimeError: ⛔ BLOCKED by self-review: NVDA 有 1 个 critical 问题待修。
+→ 读 .cache/NVDA/_review_issues.json
+→ 对每条 critical issue 执行 suggested_fix（agent 补数据 / 重跑 stage2 / 写 agent_analysis）
+→ 全部修完后重跑 assemble_report。
+→ 如需强制跳过（仅调试）：export UZI_SKIP_REVIEW=1
+
+  🎯 v2.7 风格识别: balanced (中性兜底) — fund 60.6→60.6 · consensus 17.4→25.2
+  综合评分: 46.4/100 · 谨慎 · 7 派看空
+  agent_reviewed: False
+
+📄 Task 5 · 报告组装
+✗ Self-Review · NVDA (U)
+  critical=1 warning=1 info=0
+  reviewed_at=2026-07-27T01:33:32
+
+  🔴 CRITICAL (1):
+    [2_kline] 维度 2_kline data 为空
+      evidence: _timeout=False, error=
+      fix: agent 用 WebSearch / mx_api / 手工查权威源补齐，写入 agent_analysis.dim_commentary
+  🟡 WARNING (1):
+    [agent_analysis] agent_analysis.json 不存在（lite/CLI 直跑模式可接受）
+      evidence: file not found
+      fix: CLI 直跑无 agent 环境可以忽略此项；若走 Claude Code/Codex/Cursor 则 agent 必须读 panel.json + raw_data.json 后写 agent_analysis.json
+⚠️  [run.py] pipeline 异常 · 回退 legacy: RuntimeError: ⛔ BLOCKED by self-review: NVDA 有 1 个 critical 问题待修。
+→ 读 .cache/NVDA/_review_issues.json
+→ 对每条 critic
+
+🌐 网络预检 (9/9 通 · 均延迟 951ms · proxy=no)
+  [国内 3/3]
+    ✓  230ms  push2.eastmoney.com              · 东财 push2 · A 股行情主源
+    ✓ 6163ms  www.cninfo.com.cn                · 巨潮 cninfo · 公告/行业 PE
+    ✓  259ms  stock.xueqiu.com                 · 雪球数据
+  [境外 3/3]
+    ✓   36ms  query1.finance.yahoo.com         · Yahoo Finance · 美股数据
+    ✓  295ms  api.coingecko.com                · CoinGecko · 加密市场流动性
+    ✓  663ms  baike.baidu.com                  · 百度百科 · 公司词条（国内直连但海外代理可能反被拦）
+  [搜索 3/3]
+    ✓   44ms  duckduckgo.com                   · DuckDuckGo · ddgs
+    ✓  814ms  www.baidu.com                    · 百度搜索
+    ✓   60ms  api.github.com                   · GitHub API · 通用网络健康度
+
+  ✓ 全网通畅 · Playwright 可抓境内+境外所有源
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🎯 TARGET: NVDA
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📊 Task 1 · 数据采集
+  [resume] 检测到已有缓存 · 20/21 维有效，跳过这些 fetcher
+           （用 --no-resume 强制重抓）
+  [wave 1] fetch_basic ...Traceback (most recent call last):
+  File "/home/runner/work/UZI-Skill/UZI-Skill/skills/deep-analysis/scripts/run_real_test.py", line 147, in run_fetcher
+    result = mod.main(*args)
+             ^^^^^^^^^^^^^^^
+  File "/home/runner/work/UZI-Skill/UZI-Skill/skills/deep-analysis/scripts/fetch_kline.py", line 283, in main
+    viz_shape = _extract_for_viz(klines)
+                ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/work/UZI-Skill/UZI-Skill/skills/deep-analysis/scripts/fetch_kline.py", line 253, in _extract_for_viz
+    vol = _st.stdev(rets[-252:] if len(rets) >= 252 else rets) * (252 ** 0.5) * 100
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/statistics.py", line 974, in stdev
+    return _float_sqrt_of_frac(mss.numerator, mss.denominator)
+                               ^^^^^^^^^^^^^
+AttributeError: 'float' object has no attribute 'numerator'
+ ✓ (0.1s)
+  [resume] 跳过 18 个已缓存维度: 1_financials, 4_peers, 5_chain, 6_research, 7_industry...
+  [wave 2] 1/19 fetchers parallel (max_workers=6, per-fetcher 90s)...
+    ✗ 2_kline            (  0.0s) AttributeError: 'float' object has no attribute 'numerator'
+  [wave 2] done in 0.0s
+  [wave 3] bonus fetchers parallel ...
+    ✓ fund_managers: 0
+    ✓ similar_stocks: 0
+  [wave 3] done in 0.0s
+
+  Task 1 total: 0.1s (wave1 0.1s + wave2 0.0s + wave3 0.0s)
+
+[data_integrity] 🔴 CRITICAL coverage=61.0% (11/18)
+  🔴 critical missing (2):
+     - ROE 历史 (1_financials.roe_history)
+     - K 线阶段 (2_kline.stage)
+  🟡 optional missing (5):
+     - 财务健康度 (1_financials.financial_health)
+     - 均线多空 (2_kline.ma_align)
+     - MACD (2_kline.macd)
+     - PE 5 年分位 (10_valuation.pe_quantile)
+     - PB 5 年分位 (10_valuation.pb_quantile)
+  ⚠️  fallback dims: 7_industry, 8_materials, 9_futures, 13_policy, 15_events, 2_kline
+
+▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓
+⚠️  检测到 7 个数据缺口 (2 critical)
+   恢复任务清单: .cache/NVDA/_data_gaps.json
+   Agent 必须尝试用以下手段补齐（按优先级）:
+     1. Chrome/Playwright MCP 访问 xueqiu/eastmoney
+     2. MX API (若 MX_APIKEY 已设置)
+     3. WebSearch 精确到代码
+     4. 已有数据逻辑推导
+   仍拿不到的字段 → 在 agent_analysis.json 显式标 data_gap_acknowledged
+   HTML 报告会对这些字段显示 ⚠️ 橙色徽章而非假数据
+▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓
+
+🤖 v2.6.1 · 自动兜底补齐定性维度空字段（MX → ddgs）...
+   ✓ 9_futures      via ddgs: Manus: Hands On AI — Manus is the action engine that goes be…
+   合计 · 充足 5 · 兜底成功 1 · 失败 0（共 6 维）
+
+🏛  Task 1.5 · 机构级财务建模 (Dims 20-22)
+  DCF: ¥0.0 · 安全边际 0% · ⚪ 基本合理
+  LBO: IRR 21.7% · 🟢 PE 买方可赚 20%+ IRR
+  首次覆盖: 增持 (Outperform) · TP ¥237.86599999999999 (+15.0%)
+  IC Memo: ⚪ 观望 (HOLD)
+  BCG: Dog (瘦狗) · 行业吸引力 45.0%
+
+📏 Task 2 · 22 维打分
+  基本面得分: 60.6/100
+
+🎭 Task 3 · 51 评委规则引擎（骨架分）
+  参与 42 · 跳过 24 · 看多 4 · 中性 11 · 看空 27
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+📋 Stage 1 完成 · 骨架分已生成
+   数据: .cache/NVDA/raw_data.json
+   评分: .cache/NVDA/dimensions.json
+   评委: .cache/NVDA/panel.json
+
+   ⏸️  此时 Claude agent 应介入：
+      1. 读取 panel.json 中 51 人的骨架分
+      2. Spawn 4 个 sub-agent 分组 role-play 投资者
+      3. 用 agent 判断覆盖 panel.json 中的 headline/reasoning/score
+      4. 写 agent_analysis.json 到 .cache/NVDA/
+         包含: dim_commentary, panel_insights, great_divide_override, narrative_override
+         设置 agent_reviewed: true
+      5. 然后调用 stage2('NVDA') 生成最终报告
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 ⚠️  未检测到 agent_analysis.json · 将使用脚本骨架生成 synthesis
    提示: Claude agent 应在 stage1 之后写入 .cache/NVDA/agent_analysis.json
@@ -59,38 +212,50 @@
 
 ⚖ Task 4 · 综合研判
 0it [00:00, ?it/s]                  
-  🎯 v2.7 风格识别: balanced (中性兜底) — fund 62.3→62.3 · consensus 32.7→36.7
-  综合评分: 52.1/100 · 观望偏空 · 1 派看多 / 5 派看空
+  🎯 v2.7 风格识别: balanced (中性兜底) — fund 60.6→60.6 · consensus 17.4→25.2
+  data_gaps: 7 项 · 已 ack 0
+  综合评分: 46.4/100 · 谨慎 · 7 派看空
   agent_reviewed: False
 
 📄 Task 5 · 报告组装
 ✓ Self-Review · NVDA (U)
-  critical=0 warning=1 info=0
-  reviewed_at=2026-07-24T01:33:04
+  critical=0 warning=3 info=1
+  reviewed_at=2026-07-27T01:33:45
 
-  🟡 WARNING (1):
+  🟡 WARNING (3):
+    [2_kline] 维度 2_kline data 为空 (crash)
+      evidence: _timeout=False, error=AttributeError: 'float' object has no attribute 'numerator'
+      fix: agent 用 WebSearch / mx_api / 手工查权威源补齐，写入 agent_analysis.dim_commentary
+    [20_valuation_models] DCF 内在价值为 0/None（可能负 FCF 或假设异常）
+      evidence: intrinsic_value_per_share=0
+      fix: 检查 fetch_financials.net_profit_history 最新值是否 > 0
     [agent_analysis] agent_analysis.json 不存在（lite/CLI 直跑模式可接受）
       evidence: file not found
       fix: CLI 直跑无 agent 环境可以忽略此项；若走 Claude Code/Codex/Cursor 则 agent 必须读 panel.json + raw_data.json 后写 agent_analysis.json
-⚠  NVDA: 1 warning 已记录，继续生成 HTML
-[ok] Report assembled: reports/NVDA_20260724/full-report.html
-  → reports/NVDA_20260724/full-report.html
-[ok] standalone report: reports/NVDA_20260724/full-report-standalone.html
+  🔵 INFO (1):
+    [20_valuation_models] Comps 隐含目标价缺失
+      evidence: target_price_implied=None
+      fix: 检查 fetch_peers 是否返回足够同行样本
+⚠  NVDA: 3 warning 已记录，继续生成 HTML
+[ok] Report assembled: reports/NVDA_20260727/full-report.html
+  → reports/NVDA_20260727/full-report.html
+[ok] standalone report: reports/NVDA_20260727/full-report-standalone.html
      inlined 142 avatar refs
-     size: 668,639 bytes (652 KB)
-[ok] share-card.png: reports/NVDA_20260724/share-card.png
+     size: 674,126 bytes (658 KB)
+[ok] share-card.png: reports/NVDA_20260727/share-card.png
   ✓ 朋友圈分享卡 PNG
-[ok] war-report.png: reports/NVDA_20260724/war-report.png
+[ok] war-report.png: reports/NVDA_20260727/war-report.png
   ✓ 战报横图 PNG
 
 ✅ Stage 2 完成!
-   报告: /home/runner/work/UZI-Skill/UZI-Skill/skills/deep-analysis/scripts/reports/NVDA_20260724/full-report-standalone.html
-   大小: 696 KB
-   → 走 pipeline · skip legacy stage1/stage2
+   报告: /home/runner/work/UZI-Skill/UZI-Skill/skills/deep-analysis/scripts/reports/NVDA_20260727/full-report-standalone.html
+   大小: 703 KB
+
+🎯 完整流程结束 · 报告: /home/runner/work/UZI-Skill/UZI-Skill/skills/deep-analysis/scripts/reports/NVDA_20260727/full-report-standalone.html
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-📄 报告路径: /home/runner/work/UZI-Skill/UZI-Skill/skills/deep-analysis/scripts/reports/NVDA_20260724/full-report-standalone.html
-   大小: 696 KB
+📄 报告路径: /home/runner/work/UZI-Skill/UZI-Skill/skills/deep-analysis/scripts/reports/NVDA_20260727/full-report-standalone.html
+   大小: 703 KB
 
 💡 提示: 当前环境无法打开浏览器
    方式 1: 下载文件到本地打开
