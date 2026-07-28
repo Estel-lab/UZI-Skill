@@ -18,7 +18,7 @@
 ℹ️  未设置 MX_APIKEY · 走默认 akshare/xueqiu 链（可在 .env 里配置）
 🚀 [run.py] v3.0.0 pipeline · 默认路径
 🚀 [pipeline.run] collect · AAPL
-  [pipeline] wave 1 · 0_basic · partial (0.3s)
+  [pipeline] wave 1 · 0_basic · partial (0.7s)
   [pipeline] wave 2 · 16 fetcher (max_workers=6)
     ✓ 5_chain              partial
     ✓ 4_peers              partial
@@ -27,70 +27,47 @@
     ✓ 8_materials          partial
     ✓ 11_governance        partial
     ✓ 15_events            partial
-    ✓ 16_lhb               partial
     ✓ 14_moat              partial
-    ✓ 2_kline              error
+    ✓ 16_lhb               partial
+    ✓ 2_kline              partial
     ✓ 1_financials         partial
     ✓ 10_valuation         partial
     ✓ 12_capital_flow      partial
-    ✓ 19_contests          partial
     ✓ 18_trap              partial
     ✓ 17_sentiment         full
+    ✓ 19_contests          partial
   [pipeline] wave 3 · 4 dependent fetcher
     ✓ 13_policy            partial
     ✓ 3_macro              partial
     ✓ 7_industry           partial
     ✓ 9_futures            partial
-  [pipeline] collect 完成 · 26.9s
+  [pipeline] collect 完成 · 49.6s
 ✅ [pipeline.run] raw_data.json 已写 · 进入 scoring 段（v3.0 纯函数编排）
-   ✓ 7_industry     via ddgs: Google — © 2026 - Конфиденциальность - Условия.；ZTE - ZTE Of…
-   ✓ 8_materials    via ddgs: Apple — Discover the innovative world of Apple and shop ever…
-   ✓ 9_futures      via ddgs: Yandex Games — Free games online to suit every taste. — Free…
-   ✓ 13_policy      via ddgs: d3fzqoxno61m61.aydvjch.cc/category/mrds — 赛林 • 2026 年 07 月 2…
-   ✓ 15_events      via ddgs: Apple — Discover the innovative world of Apple and shop ever…
+   ✓ 3_macro        via ddgs: 机械硬盘健康检查教程 | 2026版 - YouTube — 本期带来「2026 版机械硬盘健康检查教程」，带你看懂 S…
+   ✓ 7_industry     via ddgs: Google — © 2026 - Конфиденциальность - Условия.；iStock — ©20…
+   ✓ 8_materials    via ddgs: Official Apple Support — Learn more about popular features a…
+   ✓ 9_futures      via ddgs: Manus: Hands On AI — Manus is the action engine that goes be…
+   ✓ 15_events      via ddgs: Threads — I was at Apple when the company squeaked out a $25…
    合计 · 充足 1 · 兜底成功 5 · 失败 0（共 6 维）
    ℹ️  Playwright skip · profile=medium · opt-in 未启用 · export UZI_PLAYWRIGHT_ENABLE=1 启用后重跑
 0it [00:00, ?it/s]                  
-  🎯 v2.7 风格识别: balanced (中性兜底) — fund 59.9→59.9 · consensus 6.7→15.2
+  🎯 v2.7 风格识别: balanced (中性兜底) — fund 61.5→61.5 · consensus 20.8→26.2
 
 ⚠️  未检测到 agent_analysis.json · 将使用脚本骨架生成 synthesis
    提示: Claude agent 应在 stage1 之后写入 .cache/AAPL/agent_analysis.json
    然后再调用 stage2() · 这样报告质量会显著提升
 
 ⚖ Task 4 · 综合研判
-0it [00:00, ?it/s]                  Traceback (most recent call last):
-  File "/home/runner/work/UZI-Skill/UZI-Skill/run.py", line 605, in main
-    run_pipeline(args.ticker, resume=not args.no_resume)
-  File "/home/runner/work/UZI-Skill/UZI-Skill/skills/deep-analysis/scripts/lib/pipeline/run.py", line 63, in run_pipeline
-    return synthesize_and_render(ticker)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/runner/work/UZI-Skill/UZI-Skill/skills/deep-analysis/scripts/lib/pipeline/synthesize.py", line 19, in synthesize_and_render
-    return rrt.stage2(ticker)
-           ^^^^^^^^^^^^^^^^^^
-  File "/home/runner/work/UZI-Skill/UZI-Skill/skills/deep-analysis/scripts/run_real_test.py", line 752, in stage2
-    out = assemble(ti.full)
-          ^^^^^^^^^^^^^^^^^
-  File "/home/runner/work/UZI-Skill/UZI-Skill/skills/deep-analysis/scripts/assemble_report.py", line 359, in assemble
-    raise RuntimeError(
-RuntimeError: ⛔ BLOCKED by self-review: AAPL 有 1 个 critical 问题待修。
-→ 读 .cache/AAPL/_review_issues.json
-→ 对每条 critical issue 执行 suggested_fix（agent 补数据 / 重跑 stage2 / 写 agent_analysis）
-→ 全部修完后重跑 assemble_report。
-→ 如需强制跳过（仅调试）：export UZI_SKIP_REVIEW=1
-
-  🎯 v2.7 风格识别: balanced (中性兜底) — fund 59.9→59.9 · consensus 6.7→15.2
-  综合评分: 42.0/100 · 谨慎 · 7 派看空
+0it [00:00, ?it/s]                  
+  🎯 v2.7 风格识别: balanced (中性兜底) — fund 61.5→61.5 · consensus 20.8→26.2
+  综合评分: 47.4/100 · 谨慎 · 1 派看多 / 6 派看空
   agent_reviewed: False
 
 📄 Task 5 · 报告组装
-✗ Self-Review · AAPL (U)
-  critical=1 warning=2 info=0
-  reviewed_at=2026-07-27T01:34:33
+✓ Self-Review · AAPL (U)
+  critical=0 warning=2 info=0
+  reviewed_at=2026-07-28T01:34:19
 
-  🔴 CRITICAL (1):
-    [2_kline] 维度 2_kline data 为空
-      evidence: _timeout=False, error=
-      fix: agent 用 WebSearch / mx_api / 手工查权威源补齐，写入 agent_analysis.dim_commentary
   🟡 WARNING (2):
     [agent_analysis] agent_analysis.json 不存在（lite/CLI 直跑模式可接受）
       evidence: file not found
@@ -98,170 +75,25 @@ RuntimeError: ⛔ BLOCKED by self-review: AAPL 有 1 个 critical 问题待修�
     [synthesis] commentary 提到 苹果产业链 但 main_business 未见相关业务
       evidence: claim mentions 苹果|Apple, main_business='Consumer Electronics'
       fix: 在 raw_data.dimensions['5_chain'] 里找到明确证据，否则删除该关联
-⚠️  [run.py] pipeline 异常 · 回退 legacy: RuntimeError: ⛔ BLOCKED by self-review: AAPL 有 1 个 critical 问题待修。
-→ 读 .cache/AAPL/_review_issues.json
-→ 对每条 critic
-
-🌐 网络预检 (9/9 通 · 均延迟 435ms · proxy=no)
-  [国内 3/3]
-    ✓  372ms  push2.eastmoney.com              · 东财 push2 · A 股行情主源
-    ✓ 2365ms  www.cninfo.com.cn                · 巨潮 cninfo · 公告/行业 PE
-    ✓  190ms  stock.xueqiu.com                 · 雪球数据
-  [境外 3/3]
-    ✓   35ms  query1.finance.yahoo.com         · Yahoo Finance · 美股数据
-    ✓   16ms  api.coingecko.com                · CoinGecko · 加密市场流动性
-    ✓  153ms  baike.baidu.com                  · 百度百科 · 公司词条（国内直连但海外代理可能反被拦）
-  [搜索 3/3]
-    ✓  100ms  duckduckgo.com                   · DuckDuckGo · ddgs
-    ✓  632ms  www.baidu.com                    · 百度搜索
-    ✓   60ms  api.github.com                   · GitHub API · 通用网络健康度
-
-  ✓ 全网通畅 · Playwright 可抓境内+境外所有源
-
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-🎯 TARGET: AAPL
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-📊 Task 1 · 数据采集
-  [resume] 检测到已有缓存 · 20/21 维有效，跳过这些 fetcher
-           （用 --no-resume 强制重抓）
-  [wave 1] fetch_basic ...Traceback (most recent call last):
-  File "/home/runner/work/UZI-Skill/UZI-Skill/skills/deep-analysis/scripts/run_real_test.py", line 147, in run_fetcher
-    result = mod.main(*args)
-             ^^^^^^^^^^^^^^^
-  File "/home/runner/work/UZI-Skill/UZI-Skill/skills/deep-analysis/scripts/fetch_kline.py", line 283, in main
-    viz_shape = _extract_for_viz(klines)
-                ^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/runner/work/UZI-Skill/UZI-Skill/skills/deep-analysis/scripts/fetch_kline.py", line 253, in _extract_for_viz
-    vol = _st.stdev(rets[-252:] if len(rets) >= 252 else rets) * (252 ** 0.5) * 100
-          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/statistics.py", line 974, in stdev
-    return _float_sqrt_of_frac(mss.numerator, mss.denominator)
-                               ^^^^^^^^^^^^^
-AttributeError: 'float' object has no attribute 'numerator'
- ✓ (0.0s)
-  [resume] 跳过 18 个已缓存维度: 1_financials, 4_peers, 5_chain, 6_research, 7_industry...
-  [wave 2] 1/19 fetchers parallel (max_workers=6, per-fetcher 90s)...
-    ✗ 2_kline            (  0.0s) AttributeError: 'float' object has no attribute 'numerator'
-  [wave 2] done in 0.0s
-  [wave 3] bonus fetchers parallel ...
-    ✓ fund_managers: 0
-    ✓ similar_stocks: 0
-  [wave 3] done in 0.0s
-
-  Task 1 total: 0.0s (wave1 0.0s + wave2 0.0s + wave3 0.0s)
-
-[data_integrity] 🔴 CRITICAL coverage=61.0% (11/18)
-  🔴 critical missing (2):
-     - ROE 历史 (1_financials.roe_history)
-     - K 线阶段 (2_kline.stage)
-  🟡 optional missing (5):
-     - 财务健康度 (1_financials.financial_health)
-     - 均线多空 (2_kline.ma_align)
-     - MACD (2_kline.macd)
-     - PE 5 年分位 (10_valuation.pe_quantile)
-     - PB 5 年分位 (10_valuation.pb_quantile)
-  ⚠️  fallback dims: 7_industry, 8_materials, 9_futures, 13_policy, 15_events, 2_kline
-
-▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓
-⚠️  检测到 7 个数据缺口 (2 critical)
-   恢复任务清单: .cache/AAPL/_data_gaps.json
-   Agent 必须尝试用以下手段补齐（按优先级）:
-     1. Chrome/Playwright MCP 访问 xueqiu/eastmoney
-     2. MX API (若 MX_APIKEY 已设置)
-     3. WebSearch 精确到代码
-     4. 已有数据逻辑推导
-   仍拿不到的字段 → 在 agent_analysis.json 显式标 data_gap_acknowledged
-   HTML 报告会对这些字段显示 ⚠️ 橙色徽章而非假数据
-▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓
-
-🤖 v2.6.1 · 自动兜底补齐定性维度空字段（MX → ddgs）...
-   ✓ 9_futures      via ddgs: Yandex Games — Free games online to suit every taste. — Free…
-   合计 · 充足 5 · 兜底成功 1 · 失败 0（共 6 维）
-
-🏛  Task 1.5 · 机构级财务建模 (Dims 20-22)
-  DCF: ¥0.0 · 安全边际 0% · ⚪ 基本合理
-  LBO: IRR 21.7% · 🟢 PE 买方可赚 20%+ IRR
-  首次覆盖: 增持 (Outperform) · TP ¥382.97299999999996 (+15.0%)
-  IC Memo: ⚪ 观望 (HOLD)
-  BCG: Dog (瘦狗) · 行业吸引力 35.0%
-
-📏 Task 2 · 22 维打分
-  基本面得分: 59.9/100
-
-🎭 Task 3 · 51 评委规则引擎（骨架分）
-  参与 42 · 跳过 24 · 看多 4 · 中性 4 · 看空 34
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-📋 Stage 1 完成 · 骨架分已生成
-   数据: .cache/AAPL/raw_data.json
-   评分: .cache/AAPL/dimensions.json
-   评委: .cache/AAPL/panel.json
-
-   ⏸️  此时 Claude agent 应介入：
-      1. 读取 panel.json 中 51 人的骨架分
-      2. Spawn 4 个 sub-agent 分组 role-play 投资者
-      3. 用 agent 判断覆盖 panel.json 中的 headline/reasoning/score
-      4. 写 agent_analysis.json 到 .cache/AAPL/
-         包含: dim_commentary, panel_insights, great_divide_override, narrative_override
-         设置 agent_reviewed: true
-      5. 然后调用 stage2('AAPL') 生成最终报告
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-⚠️  未检测到 agent_analysis.json · 将使用脚本骨架生成 synthesis
-   提示: Claude agent 应在 stage1 之后写入 .cache/AAPL/agent_analysis.json
-   然后再调用 stage2() · 这样报告质量会显著提升
-
-⚖ Task 4 · 综合研判
-0it [00:00, ?it/s]                  
-  🎯 v2.7 风格识别: balanced (中性兜底) — fund 59.9→59.9 · consensus 6.7→15.2
-  data_gaps: 7 项 · 已 ack 0
-  综合评分: 42.0/100 · 谨慎 · 7 派看空
-  agent_reviewed: False
-
-📄 Task 5 · 报告组装
-✓ Self-Review · AAPL (U)
-  critical=0 warning=4 info=1
-  reviewed_at=2026-07-27T01:34:38
-
-  🟡 WARNING (4):
-    [2_kline] 维度 2_kline data 为空 (crash)
-      evidence: _timeout=False, error=AttributeError: 'float' object has no attribute 'numerator'
-      fix: agent 用 WebSearch / mx_api / 手工查权威源补齐，写入 agent_analysis.dim_commentary
-    [20_valuation_models] DCF 内在价值为 0/None（可能负 FCF 或假设异常）
-      evidence: intrinsic_value_per_share=0
-      fix: 检查 fetch_financials.net_profit_history 最新值是否 > 0
-    [agent_analysis] agent_analysis.json 不存在（lite/CLI 直跑模式可接受）
-      evidence: file not found
-      fix: CLI 直跑无 agent 环境可以忽略此项；若走 Claude Code/Codex/Cursor 则 agent 必须读 panel.json + raw_data.json 后写 agent_analysis.json
-    [synthesis] commentary 提到 苹果产业链 但 main_business 未见相关业务
-      evidence: claim mentions 苹果|Apple, main_business='Consumer Electronics'
-      fix: 在 raw_data.dimensions['5_chain'] 里找到明确证据，否则删除该关联
-  🔵 INFO (1):
-    [20_valuation_models] Comps 隐含目标价缺失
-      evidence: target_price_implied=None
-      fix: 检查 fetch_peers 是否返回足够同行样本
-⚠  AAPL: 4 warning 已记录，继续生成 HTML
-[ok] Report assembled: reports/AAPL_20260727/full-report.html
-  → reports/AAPL_20260727/full-report.html
-[ok] standalone report: reports/AAPL_20260727/full-report-standalone.html
+⚠  AAPL: 2 warning 已记录，继续生成 HTML
+[ok] Report assembled: reports/AAPL_20260728/full-report.html
+  → reports/AAPL_20260728/full-report.html
+[ok] standalone report: reports/AAPL_20260728/full-report-standalone.html
      inlined 142 avatar refs
-     size: 670,500 bytes (654 KB)
-[ok] share-card.png: reports/AAPL_20260727/share-card.png
+     size: 666,733 bytes (651 KB)
+[ok] share-card.png: reports/AAPL_20260728/share-card.png
   ✓ 朋友圈分享卡 PNG
-[ok] war-report.png: reports/AAPL_20260727/war-report.png
+[ok] war-report.png: reports/AAPL_20260728/war-report.png
   ✓ 战报横图 PNG
 
 ✅ Stage 2 完成!
-   报告: /home/runner/work/UZI-Skill/UZI-Skill/skills/deep-analysis/scripts/reports/AAPL_20260727/full-report-standalone.html
-   大小: 698 KB
-
-🎯 完整流程结束 · 报告: /home/runner/work/UZI-Skill/UZI-Skill/skills/deep-analysis/scripts/reports/AAPL_20260727/full-report-standalone.html
+   报告: /home/runner/work/UZI-Skill/UZI-Skill/skills/deep-analysis/scripts/reports/AAPL_20260728/full-report-standalone.html
+   大小: 693 KB
+   → 走 pipeline · skip legacy stage1/stage2
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-📄 报告路径: /home/runner/work/UZI-Skill/UZI-Skill/skills/deep-analysis/scripts/reports/AAPL_20260727/full-report-standalone.html
-   大小: 698 KB
+📄 报告路径: /home/runner/work/UZI-Skill/UZI-Skill/skills/deep-analysis/scripts/reports/AAPL_20260728/full-report-standalone.html
+   大小: 693 KB
 
 💡 提示: 当前环境无法打开浏览器
    方式 1: 下载文件到本地打开
