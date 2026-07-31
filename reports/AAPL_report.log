@@ -18,21 +18,21 @@
 ℹ️  未设置 MX_APIKEY · 走默认 akshare/xueqiu 链（可在 .env 里配置）
 🚀 [run.py] v3.0.0 pipeline · 默认路径
 🚀 [pipeline.run] collect · AAPL
-  [pipeline] wave 1 · 0_basic · partial (0.5s)
+  [pipeline] wave 1 · 0_basic · partial (0.1s)
   [pipeline] wave 2 · 16 fetcher (max_workers=6)
     ✓ 6_fund_holders       partial
     ✓ 4_peers              partial
-    ✓ 6_research           partial
-    ✓ 5_chain              partial
     ✓ 8_materials          partial
+    ✓ 5_chain              partial
+    ✓ 6_research           partial
     ✓ 11_governance        partial
     ✓ 15_events            partial
     ✓ 16_lhb               partial
     ✓ 14_moat              partial
     ✓ 2_kline              partial
-    ✓ 1_financials         partial
     ✓ 10_valuation         partial
     ✓ 12_capital_flow      partial
+    ✓ 1_financials         partial
     ✓ 19_contests          partial
     ✓ 18_trap              partial
     ✓ 17_sentiment         full
@@ -41,18 +41,17 @@
     ✓ 3_macro              partial
     ✓ 7_industry           partial
     ✓ 9_futures            partial
-  [pipeline] collect 完成 · 34.1s
+  [pipeline] collect 完成 · 26.4s
 ✅ [pipeline.run] raw_data.json 已写 · 进入 scoring 段（v3.0 纯函数编排）
-   ✓ 3_macro        via ddgs: 2026 Consumer Technology Trends: Growth outlook — 2026: Euro…
+   ✓ 3_macro        via ddgs: Citi30 - 商品角 - 2026 年铜价预测（Tom Mulqueen... | 哔哩哔哩 — Global an…
    ✓ 7_industry     via ddgs: MoMo, ZaloPay во Вьетнаме 2026: можно ли иностранцу | ReloSa…
-   ✓ 8_materials    via ddgs: Apple Inc. (AAPL) income statement - Yahoo Finance — Get the…
-   ✓ 9_futures      via ddgs: [期货日报]上市公司套保进入精耕细作时代 — 2025年，运用衍生工具的A股上市公司数量持续增长。据避险网统计，前11个…
-   ✓ 13_policy      via ddgs: MoMo, ZaloPay во Вьетнаме 2026: можно ли иностранцу | ReloSa…
-   ✓ 15_events      via ddgs: Apple Store Online - Apple — Neither Apple Inc. nor Apple Pa…
-   合计 · 充足 0 · 兜底成功 6 · 失败 0（共 6 维）
+   ✓ 8_materials    via ddgs: Manage your Apple Account — Your account you use for all App…
+   ✓ 9_futures      via ddgs: Official Website of Hong Kong’s Professional Consumer Electr…
+   ✓ 15_events      via ddgs: Apple Inc. (AAPL) 最新股票消息和頭條新聞 - Yahoo 財經 — Apple Inc. (AAPL)…
+   合计 · 充足 1 · 兜底成功 5 · 失败 0（共 6 维）
    ℹ️  Playwright skip · profile=medium · opt-in 未启用 · export UZI_PLAYWRIGHT_ENABLE=1 启用后重跑
 0it [00:00, ?it/s]                  
-  🎯 v2.7 风格识别: balanced (中性兜底) — fund 61.5→61.5 · consensus 21.0→26.2
+  🎯 v2.7 风格识别: balanced (中性兜底) — fund 61.5→61.5 · consensus 21.6→26.2
 
 ⚠️  未检测到 agent_analysis.json · 将使用脚本骨架生成 synthesis
    提示: Claude agent 应在 stage1 之后写入 .cache/AAPL/agent_analysis.json
@@ -60,14 +59,14 @@
 
 ⚖ Task 4 · 综合研判
 0it [00:00, ?it/s]                  
-  🎯 v2.7 风格识别: balanced (中性兜底) — fund 61.5→61.5 · consensus 21.0→26.2
+  🎯 v2.7 风格识别: balanced (中性兜底) — fund 61.5→61.5 · consensus 21.6→26.2
   综合评分: 47.4/100 · 谨慎 · 1 派看多 / 6 派看空
   agent_reviewed: False
 
 📄 Task 5 · 报告组装
 ✓ Self-Review · AAPL (U)
   critical=0 warning=2 info=0
-  reviewed_at=2026-07-30T01:33:20
+  reviewed_at=2026-07-31T01:33:38
 
   🟡 WARNING (2):
     [agent_analysis] agent_analysis.json 不存在（lite/CLI 直跑模式可接受）
@@ -77,24 +76,24 @@
       evidence: claim mentions 苹果|Apple, main_business='Consumer Electronics'
       fix: 在 raw_data.dimensions['5_chain'] 里找到明确证据，否则删除该关联
 ⚠  AAPL: 2 warning 已记录，继续生成 HTML
-[ok] Report assembled: reports/AAPL_20260730/full-report.html
-  → reports/AAPL_20260730/full-report.html
-[ok] standalone report: reports/AAPL_20260730/full-report-standalone.html
+[ok] Report assembled: reports/AAPL_20260731/full-report.html
+  → reports/AAPL_20260731/full-report.html
+[ok] standalone report: reports/AAPL_20260731/full-report-standalone.html
      inlined 142 avatar refs
-     size: 666,155 bytes (650 KB)
-[ok] share-card.png: reports/AAPL_20260730/share-card.png
+     size: 667,011 bytes (651 KB)
+[ok] share-card.png: reports/AAPL_20260731/share-card.png
   ✓ 朋友圈分享卡 PNG
-[ok] war-report.png: reports/AAPL_20260730/war-report.png
+[ok] war-report.png: reports/AAPL_20260731/war-report.png
   ✓ 战报横图 PNG
 
 ✅ Stage 2 完成!
-   报告: /home/runner/work/UZI-Skill/UZI-Skill/skills/deep-analysis/scripts/reports/AAPL_20260730/full-report-standalone.html
-   大小: 692 KB
+   报告: /home/runner/work/UZI-Skill/UZI-Skill/skills/deep-analysis/scripts/reports/AAPL_20260731/full-report-standalone.html
+   大小: 694 KB
    → 走 pipeline · skip legacy stage1/stage2
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-📄 报告路径: /home/runner/work/UZI-Skill/UZI-Skill/skills/deep-analysis/scripts/reports/AAPL_20260730/full-report-standalone.html
-   大小: 692 KB
+📄 报告路径: /home/runner/work/UZI-Skill/UZI-Skill/skills/deep-analysis/scripts/reports/AAPL_20260731/full-report-standalone.html
+   大小: 694 KB
 
 💡 提示: 当前环境无法打开浏览器
    方式 1: 下载文件到本地打开
