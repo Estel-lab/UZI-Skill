@@ -20,17 +20,17 @@
 🚀 [pipeline.run] collect · NVDA
   [pipeline] wave 1 · 0_basic · partial (0.3s)
   [pipeline] wave 2 · 16 fetcher (max_workers=6)
-    ✓ 6_fund_holders       partial
     ✓ 4_peers              partial
     ✓ 5_chain              partial
+    ✓ 6_fund_holders       partial
     ✓ 6_research           partial
     ✓ 8_materials          partial
     ✓ 11_governance        partial
     ✓ 15_events            partial
     ✓ 16_lhb               partial
-    ✓ 2_kline              partial
     ✓ 1_financials         partial
     ✓ 10_valuation         partial
+    ✓ 2_kline              partial
     ✓ 12_capital_flow      partial
     ✓ 14_moat              full
     ✓ 19_contests          partial
@@ -41,14 +41,15 @@
     ✓ 3_macro              partial
     ✓ 7_industry           partial
     ✓ 9_futures            partial
-  [pipeline] collect 完成 · 38.1s
+  [pipeline] collect 完成 · 43.0s
 ✅ [pipeline.run] raw_data.json 已写 · 进入 scoring 段（v3.0 纯函数编排）
-   ✓ 3_macro        via ddgs: 2026全球半导体行业展望 | 半导体报告 — 2026年全球半导体行业展望分析：AI芯片需求、先进制程竞争、供应链区域…
-   ✓ 7_industry     via ddgs: 2026上半年半导体行业深度分析与国产替代趋势 | 行业报告 - OpenAxo — 本文深度分析2026年上半年全球与…
-   ✓ 8_materials    via ddgs: World Leader in Artificial Intelligence Computing | NVIDIA —…
-   ✓ 9_futures      via ddgs: 上市公司套保潮：1546家A股公司为何集体"上期货" — 今年以来，全球大宗商品价格高位波动，汇率双向扰动持续增强，越来…
-   ✓ 15_events      via ddgs: NVDA | Nvidia股市 - Investing.com — NVIDIA Corporation股票（NVDA）…
-   合计 · 充足 1 · 兜底成功 5 · 失败 0（共 6 维）
+   ✓ 3_macro        via ddgs: 【百格午报】行动党留不留团结政府？霹雳火箭先给答案了 | 12.8.2026 — 霹雳火箭先给答案了 | 12.8.20…
+   ✓ 7_industry     via ddgs: 费加罗报：中国AI... - RFI - 法国国际广播电台 — People sit near Unitree's G1…
+   ✓ 8_materials    via ddgs: NVIDIA 推出 Grace Blackwell... | NVIDIA 英伟达博客 — Index paraview…
+   ✓ 9_futures      via ddgs: 「期货套期保值招聘信息」-BOSS直聘 — 期货与套期保值金融师（大宗商品风险管理） 25-40K.1.公司提供资源，通…
+   ✓ 13_policy      via ddgs: 【百格午报】行动党留不留团结政府？霹雳火箭先给答案了 | 12.8.2026 — 【百格午报】行动党留不留团结政府？ 霹…
+   ✓ 15_events      via ddgs: 英伟达(NVDA)... — 7×24小时英伟达（NVDA）股票快讯，包括最近英伟达公司（NVDA）股票市场行情资讯和影…
+   合计 · 充足 0 · 兜底成功 6 · 失败 0（共 6 维）
    ℹ️  Playwright skip · profile=medium · opt-in 未启用 · export UZI_PLAYWRIGHT_ENABLE=1 启用后重跑
 0it [00:00, ?it/s]                  
   🎯 v2.7 风格识别: balanced (中性兜底) — fund 62.3→62.3 · consensus 36.2→40.0
@@ -66,31 +67,31 @@
 📄 Task 5 · 报告组装
 ✓ Self-Review · NVDA (U)
   critical=0 warning=1 info=0
-  reviewed_at=2026-08-12T03:17:34
+  reviewed_at=2026-08-13T03:22:12
 
   🟡 WARNING (1):
     [agent_analysis] agent_analysis.json 不存在（lite/CLI 直跑模式可接受）
       evidence: file not found
       fix: CLI 直跑无 agent 环境可以忽略此项；若走 Claude Code/Codex/Cursor 则 agent 必须读 panel.json + raw_data.json 后写 agent_analysis.json
 ⚠  NVDA: 1 warning 已记录，继续生成 HTML
-[ok] Report assembled: reports/NVDA_20260812/full-report.html
-  → reports/NVDA_20260812/full-report.html
-[ok] standalone report: reports/NVDA_20260812/full-report-standalone.html
+[ok] Report assembled: reports/NVDA_20260813/full-report.html
+  → reports/NVDA_20260813/full-report.html
+[ok] standalone report: reports/NVDA_20260813/full-report-standalone.html
      inlined 142 avatar refs
-     size: 670,689 bytes (654 KB)
-[ok] share-card.png: reports/NVDA_20260812/share-card.png
+     size: 670,164 bytes (654 KB)
+[ok] share-card.png: reports/NVDA_20260813/share-card.png
   ✓ 朋友圈分享卡 PNG
-[ok] war-report.png: reports/NVDA_20260812/war-report.png
+[ok] war-report.png: reports/NVDA_20260813/war-report.png
   ✓ 战报横图 PNG
 
 ✅ Stage 2 完成!
-   报告: /home/runner/work/UZI-Skill/UZI-Skill/skills/deep-analysis/scripts/reports/NVDA_20260812/full-report-standalone.html
-   大小: 701 KB
+   报告: /home/runner/work/UZI-Skill/UZI-Skill/skills/deep-analysis/scripts/reports/NVDA_20260813/full-report-standalone.html
+   大小: 698 KB
    → 走 pipeline · skip legacy stage1/stage2
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-📄 报告路径: /home/runner/work/UZI-Skill/UZI-Skill/skills/deep-analysis/scripts/reports/NVDA_20260812/full-report-standalone.html
-   大小: 701 KB
+📄 报告路径: /home/runner/work/UZI-Skill/UZI-Skill/skills/deep-analysis/scripts/reports/NVDA_20260813/full-report-standalone.html
+   大小: 698 KB
 
 💡 提示: 当前环境无法打开浏览器
    方式 1: 下载文件到本地打开
