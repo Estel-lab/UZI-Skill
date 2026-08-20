@@ -18,30 +18,30 @@
 ℹ️  未设置 MX_APIKEY · 走默认 akshare/xueqiu 链（可在 .env 里配置）
 🚀 [run.py] v3.0.0 pipeline · 默认路径
 🚀 [pipeline.run] collect · AAPL
-  [pipeline] wave 1 · 0_basic · partial (0.2s)
+  [pipeline] wave 1 · 0_basic · partial (0.5s)
   [pipeline] wave 2 · 16 fetcher (max_workers=6)
-    ✓ 5_chain              partial
     ✓ 4_peers              partial
-    ✓ 6_research           partial
-    ✓ 6_fund_holders       partial
     ✓ 8_materials          partial
+    ✓ 6_fund_holders       partial
+    ✓ 5_chain              partial
+    ✓ 6_research           partial
     ✓ 11_governance        partial
     ✓ 15_events            partial
     ✓ 16_lhb               partial
     ✓ 14_moat              partial
-    ✓ 1_financials         partial
     ✓ 2_kline              partial
     ✓ 10_valuation         partial
     ✓ 12_capital_flow      partial
+    ✓ 1_financials         partial
     ✓ 19_contests          partial
-    ✓ 17_sentiment         full
     ✓ 18_trap              partial
+    ✓ 17_sentiment         full
   [pipeline] wave 3 · 4 dependent fetcher
     ✓ 13_policy            partial
     ✓ 3_macro              partial
     ✓ 7_industry           partial
     ✓ 9_futures            partial
-  [pipeline] collect 完成 · 24.0s
+  [pipeline] collect 完成 · 25.6s
 ✅ [pipeline.run] raw_data.json 已写 · 进入 scoring 段（v3.0 纯函数编排）
    ⚠️ 3_macro        兜底失败 · agent 应主动 web search 补抓
    ⚠️ 7_industry     兜底失败 · agent 应主动 web search 补抓
@@ -67,7 +67,7 @@
 📄 Task 5 · 报告组装
 ✓ Self-Review · AAPL (U)
   critical=0 warning=2 info=0
-  reviewed_at=2026-08-19T02:15:01
+  reviewed_at=2026-08-20T02:11:14
 
   🟡 WARNING (2):
     [agent_analysis] agent_analysis.json 不存在（lite/CLI 直跑模式可接受）
@@ -77,23 +77,23 @@
       evidence: claim mentions 苹果|Apple, main_business='Consumer Electronics'
       fix: 在 raw_data.dimensions['5_chain'] 里找到明确证据，否则删除该关联
 ⚠  AAPL: 2 warning 已记录，继续生成 HTML
-[ok] Report assembled: reports/AAPL_20260819/full-report.html
-  → reports/AAPL_20260819/full-report.html
-[ok] standalone report: reports/AAPL_20260819/full-report-standalone.html
+[ok] Report assembled: reports/AAPL_20260820/full-report.html
+  → reports/AAPL_20260820/full-report.html
+[ok] standalone report: reports/AAPL_20260820/full-report-standalone.html
      inlined 142 avatar refs
-     size: 663,671 bytes (648 KB)
-[ok] share-card.png: reports/AAPL_20260819/share-card.png
+     size: 663,635 bytes (648 KB)
+[ok] share-card.png: reports/AAPL_20260820/share-card.png
   ✓ 朋友圈分享卡 PNG
-[ok] war-report.png: reports/AAPL_20260819/war-report.png
+[ok] war-report.png: reports/AAPL_20260820/war-report.png
   ✓ 战报横图 PNG
 
 ✅ Stage 2 完成!
-   报告: /home/runner/work/UZI-Skill/UZI-Skill/skills/deep-analysis/scripts/reports/AAPL_20260819/full-report-standalone.html
+   报告: /home/runner/work/UZI-Skill/UZI-Skill/skills/deep-analysis/scripts/reports/AAPL_20260820/full-report-standalone.html
    大小: 689 KB
    → 走 pipeline · skip legacy stage1/stage2
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-📄 报告路径: /home/runner/work/UZI-Skill/UZI-Skill/skills/deep-analysis/scripts/reports/AAPL_20260819/full-report-standalone.html
+📄 报告路径: /home/runner/work/UZI-Skill/UZI-Skill/skills/deep-analysis/scripts/reports/AAPL_20260820/full-report-standalone.html
    大小: 689 KB
 
 💡 提示: 当前环境无法打开浏览器
