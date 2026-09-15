@@ -20,15 +20,15 @@
 🚀 [pipeline.run] collect · MSFT
   [pipeline] wave 1 · 0_basic · partial (0.4s)
   [pipeline] wave 2 · 16 fetcher (max_workers=6)
-    ✓ 6_research           partial
-    ✓ 4_peers              partial
     ✓ 5_chain              partial
-    ✓ 6_fund_holders       partial
+    ✓ 4_peers              partial
+    ✓ 6_research           partial
     ✓ 8_materials          partial
+    ✓ 6_fund_holders       partial
     ✓ 11_governance        partial
     ✓ 15_events            partial
+    ✓ 14_moat              partial
     ✓ 16_lhb               partial
-    ✓ 14_moat              full
     ✓ 2_kline              partial
     ✓ 1_financials         partial
     ✓ 10_valuation         partial
@@ -41,15 +41,17 @@
     ✓ 3_macro              partial
     ✓ 7_industry           partial
     ✓ 9_futures            partial
-  [pipeline] collect 完成 · 22.2s
+  [pipeline] collect 完成 · 27.2s
 ✅ [pipeline.run] raw_data.json 已写 · 进入 scoring 段（v3.0 纯函数编排）
-   ✓ 8_materials    via ddgs: Release notes - Microsoft Adoption — 2025年2月18日 · These rele…
+   ✓ 3_macro        via ddgs: 招商证券A股2026年投资策略展望：全球共振，内需回归，A股上行 — 2025年12月14日 · 我们预测2026年非金…
+   ✓ 7_industry     via ddgs: [PDF] 苏州工业园区凌志软件股份有限公司2026 年半年度报告 — 2026年8月31日 · 行业市场，形成规模. …
+   ⚠️ 8_materials    兜底失败 · agent 应主动 web search 补抓
    ✓ 9_futures      via ddgs: [PDF] 南非 - 淄博市人民政府外事办公室 — 2024年12月31日 · ... 上下游产业带来不少于1000万兰…
-   ✓ 15_events      via ddgs: Microsoft 服务协议 — 2025年7月30日 · Microsoft 服务协议简介. Microsoft 服务…
-   合计 · 充足 3 · 兜底成功 3 · 失败 0（共 6 维）
+   ⚠️ 15_events      兜底失败 · agent 应主动 web search 补抓
+   合计 · 充足 1 · 兜底成功 3 · 失败 2（共 6 维）
    ℹ️  Playwright skip · profile=medium · opt-in 未启用 · export UZI_PLAYWRIGHT_ENABLE=1 启用后重跑
 0it [00:00, ?it/s]                  
-  🎯 v2.7 风格识别: balanced (中性兜底) — fund 58.7→58.7 · consensus 26.7→31.9
+  🎯 v2.7 风格识别: balanced (中性兜底) — fund 58.7→58.7 · consensus 21.7→26.7
 
 ⚠️  未检测到 agent_analysis.json · 将使用脚本骨架生成 synthesis
    提示: Claude agent 应在 stage1 之后写入 .cache/MSFT/agent_analysis.json
@@ -57,38 +59,38 @@
 
 ⚖ Task 4 · 综合研判
 0it [00:00, ?it/s]                  
-  🎯 v2.7 风格识别: balanced (中性兜底) — fund 58.7→58.7 · consensus 26.7→31.9
-  综合评分: 48.0/100 · 谨慎 · 5 派看空
+  🎯 v2.7 风格识别: balanced (中性兜底) — fund 58.7→58.7 · consensus 21.7→26.7
+  综合评分: 45.9/100 · 谨慎 · 6 派看空
   agent_reviewed: False
 
 📄 Task 5 · 报告组装
 ✓ Self-Review · MSFT (U)
   critical=0 warning=1 info=0
-  reviewed_at=2026-09-14T05:34:13
+  reviewed_at=2026-09-15T05:35:16
 
   🟡 WARNING (1):
     [agent_analysis] agent_analysis.json 不存在（lite/CLI 直跑模式可接受）
       evidence: file not found
       fix: CLI 直跑无 agent 环境可以忽略此项；若走 Claude Code/Codex/Cursor 则 agent 必须读 panel.json + raw_data.json 后写 agent_analysis.json
 ⚠  MSFT: 1 warning 已记录，继续生成 HTML
-[ok] Report assembled: reports/MSFT_20260914/full-report.html
-  → reports/MSFT_20260914/full-report.html
-[ok] standalone report: reports/MSFT_20260914/full-report-standalone.html
+[ok] Report assembled: reports/MSFT_20260915/full-report.html
+  → reports/MSFT_20260915/full-report.html
+[ok] standalone report: reports/MSFT_20260915/full-report-standalone.html
      inlined 142 avatar refs
-     size: 670,971 bytes (655 KB)
-[ok] share-card.png: reports/MSFT_20260914/share-card.png
+     size: 666,948 bytes (651 KB)
+[ok] share-card.png: reports/MSFT_20260915/share-card.png
   ✓ 朋友圈分享卡 PNG
-[ok] war-report.png: reports/MSFT_20260914/war-report.png
+[ok] war-report.png: reports/MSFT_20260915/war-report.png
   ✓ 战报横图 PNG
 
 ✅ Stage 2 完成!
-   报告: /home/runner/work/UZI-Skill/UZI-Skill/skills/deep-analysis/scripts/reports/MSFT_20260914/full-report-standalone.html
-   大小: 701 KB
+   报告: /home/runner/work/UZI-Skill/UZI-Skill/skills/deep-analysis/scripts/reports/MSFT_20260915/full-report-standalone.html
+   大小: 695 KB
    → 走 pipeline · skip legacy stage1/stage2
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-📄 报告路径: /home/runner/work/UZI-Skill/UZI-Skill/skills/deep-analysis/scripts/reports/MSFT_20260914/full-report-standalone.html
-   大小: 701 KB
+📄 报告路径: /home/runner/work/UZI-Skill/UZI-Skill/skills/deep-analysis/scripts/reports/MSFT_20260915/full-report-standalone.html
+   大小: 695 KB
 
 💡 提示: 当前环境无法打开浏览器
    方式 1: 下载文件到本地打开
