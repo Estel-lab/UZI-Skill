@@ -18,21 +18,21 @@
 ℹ️  未设置 MX_APIKEY · 走默认 akshare/xueqiu 链（可在 .env 里配置）
 🚀 [run.py] v3.0.0 pipeline · 默认路径
 🚀 [pipeline.run] collect · AAPL
-  [pipeline] wave 1 · 0_basic · partial (0.4s)
+  [pipeline] wave 1 · 0_basic · partial (0.3s)
   [pipeline] wave 2 · 16 fetcher (max_workers=6)
-    ✓ 5_chain              partial
     ✓ 6_fund_holders       partial
+    ✓ 8_materials          partial
+    ✓ 5_chain              partial
     ✓ 6_research           partial
     ✓ 4_peers              partial
-    ✓ 8_materials          partial
     ✓ 11_governance        partial
     ✓ 15_events            partial
     ✓ 16_lhb               partial
     ✓ 14_moat              partial
     ✓ 2_kline              partial
+    ✓ 1_financials         partial
     ✓ 10_valuation         partial
     ✓ 12_capital_flow      partial
-    ✓ 1_financials         partial
     ✓ 19_contests          partial
     ✓ 18_trap              partial
     ✓ 17_sentiment         full
@@ -41,17 +41,16 @@
     ✓ 3_macro              partial
     ✓ 7_industry           partial
     ✓ 9_futures            partial
-  [pipeline] collect 完成 · 26.9s
+  [pipeline] collect 完成 · 26.0s
 ✅ [pipeline.run] raw_data.json 已写 · 进入 scoring 段（v3.0 纯函数编排）
    ⚠️ 3_macro        兜底失败 · agent 应主动 web search 补抓
    ⚠️ 8_materials    兜底失败 · agent 应主动 web search 补抓
    ⚠️ 9_futures      兜底失败 · agent 应主动 web search 补抓
-   ⚠️ 13_policy      兜底失败 · agent 应主动 web search 补抓
-   ✓ 15_events      via ddgs: 苹果公司- 维基百科，自由的百科全书 — 苹果公司（英语：Apple Inc.），原称苹果电脑公司（英语：Apple C…
-   合计 · 充足 1 · 兜底成功 1 · 失败 4（共 6 维）
+   ⚠️ 15_events      兜底失败 · agent 应主动 web search 补抓
+   合计 · 充足 2 · 兜底成功 0 · 失败 4（共 6 维）
    ℹ️  Playwright skip · profile=medium · opt-in 未启用 · export UZI_PLAYWRIGHT_ENABLE=1 启用后重跑
 0it [00:00, ?it/s]                  
-  🎯 v2.7 风格识别: balanced (中性兜底) — fund 61.5→61.5 · consensus 24.3→29.0
+  🎯 v2.7 风格识别: balanced (中性兜底) — fund 61.5→61.5 · consensus 24.5→29.0
 
 ⚠️  未检测到 agent_analysis.json · 将使用脚本骨架生成 synthesis
    提示: Claude agent 应在 stage1 之后写入 .cache/AAPL/agent_analysis.json
@@ -59,14 +58,14 @@
 
 ⚖ Task 4 · 综合研判
 0it [00:00, ?it/s]                  
-  🎯 v2.7 风格识别: balanced (中性兜底) — fund 61.5→61.5 · consensus 24.3→29.0
+  🎯 v2.7 风格识别: balanced (中性兜底) — fund 61.5→61.5 · consensus 24.5→29.0
   综合评分: 48.5/100 · 谨慎 · 1 派看多 / 6 派看空
   agent_reviewed: False
 
 📄 Task 5 · 报告组装
 ✓ Self-Review · AAPL (U)
   critical=0 warning=2 info=0
-  reviewed_at=2026-09-18T05:23:26
+  reviewed_at=2026-09-21T05:37:37
 
   🟡 WARNING (2):
     [agent_analysis] agent_analysis.json 不存在（lite/CLI 直跑模式可接受）
@@ -76,24 +75,24 @@
       evidence: claim mentions 苹果|Apple, main_business='Consumer Electronics'
       fix: 在 raw_data.dimensions['5_chain'] 里找到明确证据，否则删除该关联
 ⚠  AAPL: 2 warning 已记录，继续生成 HTML
-[ok] Report assembled: reports/AAPL_20260918/full-report.html
-  → reports/AAPL_20260918/full-report.html
-[ok] standalone report: reports/AAPL_20260918/full-report-standalone.html
+[ok] Report assembled: reports/AAPL_20260921/full-report.html
+  → reports/AAPL_20260921/full-report.html
+[ok] standalone report: reports/AAPL_20260921/full-report-standalone.html
      inlined 142 avatar refs
-     size: 665,669 bytes (650 KB)
-[ok] share-card.png: reports/AAPL_20260918/share-card.png
+     size: 666,688 bytes (651 KB)
+[ok] share-card.png: reports/AAPL_20260921/share-card.png
   ✓ 朋友圈分享卡 PNG
-[ok] war-report.png: reports/AAPL_20260918/war-report.png
+[ok] war-report.png: reports/AAPL_20260921/war-report.png
   ✓ 战报横图 PNG
 
 ✅ Stage 2 完成!
-   报告: /home/runner/work/UZI-Skill/UZI-Skill/skills/deep-analysis/scripts/reports/AAPL_20260918/full-report-standalone.html
-   大小: 692 KB
+   报告: /home/runner/work/UZI-Skill/UZI-Skill/skills/deep-analysis/scripts/reports/AAPL_20260921/full-report-standalone.html
+   大小: 694 KB
    → 走 pipeline · skip legacy stage1/stage2
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-📄 报告路径: /home/runner/work/UZI-Skill/UZI-Skill/skills/deep-analysis/scripts/reports/AAPL_20260918/full-report-standalone.html
-   大小: 692 KB
+📄 报告路径: /home/runner/work/UZI-Skill/UZI-Skill/skills/deep-analysis/scripts/reports/AAPL_20260921/full-report-standalone.html
+   大小: 694 KB
 
 💡 提示: 当前环境无法打开浏览器
    方式 1: 下载文件到本地打开
