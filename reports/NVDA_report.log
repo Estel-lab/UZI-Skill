@@ -22,26 +22,26 @@
   [pipeline] wave 2 · 16 fetcher (max_workers=6)
     ✓ 4_peers              partial
     ✓ 6_fund_holders       partial
-    ✓ 5_chain              partial
     ✓ 6_research           partial
+    ✓ 5_chain              partial
     ✓ 8_materials          partial
     ✓ 11_governance        partial
     ✓ 15_events            partial
     ✓ 16_lhb               partial
     ✓ 2_kline              partial
+    ✓ 1_financials         partial
     ✓ 10_valuation         partial
     ✓ 12_capital_flow      partial
-    ✓ 1_financials         partial
     ✓ 14_moat              full
-    ✓ 19_contests          partial
     ✓ 18_trap              partial
+    ✓ 19_contests          partial
     ✓ 17_sentiment         full
   [pipeline] wave 3 · 4 dependent fetcher
     ✓ 13_policy            partial
     ✓ 3_macro              partial
     ✓ 7_industry           partial
     ✓ 9_futures            partial
-  [pipeline] collect 完成 · 41.5s
+  [pipeline] collect 完成 · 43.4s
 ✅ [pipeline.run] raw_data.json 已写 · 进入 scoring 段（v3.0 纯函数编排）
    ⚠️ 3_macro        兜底失败 · agent 应主动 web search 补抓
    ⚠️ 7_industry     兜底失败 · agent 应主动 web search 补抓
@@ -67,30 +67,30 @@
 📄 Task 5 · 报告组装
 ✓ Self-Review · NVDA (U)
   critical=0 warning=1 info=0
-  reviewed_at=2026-09-28T06:03:36
+  reviewed_at=2026-09-29T06:21:38
 
   🟡 WARNING (1):
     [agent_analysis] agent_analysis.json 不存在（lite/CLI 直跑模式可接受）
       evidence: file not found
       fix: CLI 直跑无 agent 环境可以忽略此项；若走 Claude Code/Codex/Cursor 则 agent 必须读 panel.json + raw_data.json 后写 agent_analysis.json
 ⚠  NVDA: 1 warning 已记录，继续生成 HTML
-[ok] Report assembled: reports/NVDA_20260928/full-report.html
-  → reports/NVDA_20260928/full-report.html
-[ok] standalone report: reports/NVDA_20260928/full-report-standalone.html
+[ok] Report assembled: reports/NVDA_20260929/full-report.html
+  → reports/NVDA_20260929/full-report.html
+[ok] standalone report: reports/NVDA_20260929/full-report-standalone.html
      inlined 142 avatar refs
-     size: 666,169 bytes (650 KB)
-[ok] share-card.png: reports/NVDA_20260928/share-card.png
+     size: 666,176 bytes (650 KB)
+[ok] share-card.png: reports/NVDA_20260929/share-card.png
   ✓ 朋友圈分享卡 PNG
-[ok] war-report.png: reports/NVDA_20260928/war-report.png
+[ok] war-report.png: reports/NVDA_20260929/war-report.png
   ✓ 战报横图 PNG
 
 ✅ Stage 2 完成!
-   报告: /home/runner/work/UZI-Skill/UZI-Skill/skills/deep-analysis/scripts/reports/NVDA_20260928/full-report-standalone.html
+   报告: /home/runner/work/UZI-Skill/UZI-Skill/skills/deep-analysis/scripts/reports/NVDA_20260929/full-report-standalone.html
    大小: 692 KB
    → 走 pipeline · skip legacy stage1/stage2
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-📄 报告路径: /home/runner/work/UZI-Skill/UZI-Skill/skills/deep-analysis/scripts/reports/NVDA_20260928/full-report-standalone.html
+📄 报告路径: /home/runner/work/UZI-Skill/UZI-Skill/skills/deep-analysis/scripts/reports/NVDA_20260929/full-report-standalone.html
    大小: 692 KB
 
 💡 提示: 当前环境无法打开浏览器
