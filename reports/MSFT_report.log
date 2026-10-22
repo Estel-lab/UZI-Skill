@@ -20,12 +20,12 @@
 🚀 [pipeline.run] collect · MSFT
   [pipeline] wave 1 · 0_basic · partial (0.2s)
   [pipeline] wave 2 · 16 fetcher (max_workers=6)
-    ✓ 4_peers              partial
     ✓ 5_chain              partial
+    ✓ 4_peers              partial
     ✓ 6_fund_holders       partial
     ✓ 6_research           partial
-    ✓ 11_governance        partial
     ✓ 8_materials          partial
+    ✓ 11_governance        partial
     ✓ 15_events            partial
     ✓ 16_lhb               partial
     ✓ 14_moat              partial
@@ -41,7 +41,7 @@
     ✓ 3_macro              partial
     ✓ 7_industry           partial
     ✓ 9_futures            partial
-  [pipeline] collect 完成 · 28.7s
+  [pipeline] collect 完成 · 26.9s
 ✅ [pipeline.run] raw_data.json 已写 · 进入 scoring 段（v3.0 纯函数编排）
    ⚠️ 3_macro        兜底失败 · agent 应主动 web search 补抓
    ⚠️ 7_industry     兜底失败 · agent 应主动 web search 补抓
@@ -67,30 +67,30 @@
 📄 Task 5 · 报告组装
 ✓ Self-Review · MSFT (U)
   critical=0 warning=1 info=0
-  reviewed_at=2026-10-21T05:30:43
+  reviewed_at=2026-10-22T05:35:21
 
   🟡 WARNING (1):
     [agent_analysis] agent_analysis.json 不存在（lite/CLI 直跑模式可接受）
       evidence: file not found
       fix: CLI 直跑无 agent 环境可以忽略此项；若走 Claude Code/Codex/Cursor 则 agent 必须读 panel.json + raw_data.json 后写 agent_analysis.json
 ⚠  MSFT: 1 warning 已记录，继续生成 HTML
-[ok] Report assembled: reports/MSFT_20261021/full-report.html
-  → reports/MSFT_20261021/full-report.html
-[ok] standalone report: reports/MSFT_20261021/full-report-standalone.html
+[ok] Report assembled: reports/MSFT_20261022/full-report.html
+  → reports/MSFT_20261022/full-report.html
+[ok] standalone report: reports/MSFT_20261022/full-report-standalone.html
      inlined 142 avatar refs
-     size: 665,087 bytes (649 KB)
-[ok] share-card.png: reports/MSFT_20261021/share-card.png
+     size: 665,101 bytes (649 KB)
+[ok] share-card.png: reports/MSFT_20261022/share-card.png
   ✓ 朋友圈分享卡 PNG
-[ok] war-report.png: reports/MSFT_20261021/war-report.png
+[ok] war-report.png: reports/MSFT_20261022/war-report.png
   ✓ 战报横图 PNG
 
 ✅ Stage 2 完成!
-   报告: /home/runner/work/UZI-Skill/UZI-Skill/skills/deep-analysis/scripts/reports/MSFT_20261021/full-report-standalone.html
+   报告: /home/runner/work/UZI-Skill/UZI-Skill/skills/deep-analysis/scripts/reports/MSFT_20261022/full-report-standalone.html
    大小: 691 KB
    → 走 pipeline · skip legacy stage1/stage2
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-📄 报告路径: /home/runner/work/UZI-Skill/UZI-Skill/skills/deep-analysis/scripts/reports/MSFT_20261021/full-report-standalone.html
+📄 报告路径: /home/runner/work/UZI-Skill/UZI-Skill/skills/deep-analysis/scripts/reports/MSFT_20261022/full-report-standalone.html
    大小: 691 KB
 
 💡 提示: 当前环境无法打开浏览器
